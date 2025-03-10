@@ -1,4 +1,4 @@
-# Country Data API Package
+# REST Countries Typed API Package
 
 This package provides an easy and `TYPE-SAFE` way to interact with the [Rest Countries API](https://restcountries.com/), which offers detailed information about countries worldwide. You can fetch country data using various parameters like CCA2/CCA3 codes, capital cities, and more. `Thank you Alejandro Matos for this API.`
 
