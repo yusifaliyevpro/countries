@@ -1,0 +1,54 @@
+{
+  "name": "@yusifaliyevpro/countries",
+  "version": "1.2.8",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "countries",
+    "restcountries",
+    "country-api",
+    "typescript",
+    "iso3166",
+    "cca2",
+    "cca3",
+    "country-data",
+    "world-countries",
+    "capital-cities",
+    "region",
+    "flags"
+  ],
+  "author": {
+    "name": "Yusif Aliyev",
+    "email": "yusifaliyevpro@gmail.com",
+    "url": "https://yusifaliyevpro.com/"
+  },
+  "homepage": "https://github.com/rsp/node-caught#readme",
+  "license": "MIT",
+  "type": "commonjs",
+  "description": "TypeScript wrapper for Rest Countries API to fetch country data by codes, capitals, or all countries with full typings.",
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.10",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.6",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

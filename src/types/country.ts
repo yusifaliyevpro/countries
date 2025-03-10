@@ -1,0 +1,50 @@
+import { capitals } from "../data/capitals";
+import { cca2Codes } from "../data/cca2.codes";
+import { cca3Codes } from "../data/cca3.codes";
+import { supportedLanguages } from "../data/langs";
+import { LiteralUnion } from "./common";
+
+export interface Country {
+  name: { common: string; official: string; nativeName?: { [key: string]: { official: string; common: string } } };
+  tld?: string[];
+  cca2: string;
+  ccn3?: string;
+  cca3: string;
+  cioc?: string;
+  independent?: boolean;
+  status: string;
+  unMember: boolean;
+  currencies?: { [key: string]: { name: string; symbol: string } };
+  idd: { root?: string; suffixes?: string[] };
+  capital?: string[];
+  altSpellings: string[];
+  region: string;
+  subregion?: string;
+  languages?: { [key: string]: string };
+  translations?: Translations;
+  latlng: [number, number];
+  landlocked: boolean;
+  borders?: string[];
+  area: number;
+  demonyms?: { [key: string]: { f: string; m: string } };
+  flag: string;
+  maps: { googleMaps: string; openStreetMaps: string };
+  population: number;
+  gini?: { [year: string]: number };
+  fifa?: string;
+  car: { signs?: string[]; side: string };
+  timezones: string[];
+  continents: string[];
+  flags: { png: string; svg: string; alt?: string };
+  coatOfArms: { png?: string; svg?: string };
+  startOfWeek: string;
+  capitalInfo: { latlng?: [number, number] };
+  postalCode?: { format: string; regex?: string };
+}
+
+export type SupportedLanguages = (typeof supportedLanguages)[number];
+export type TranslationValue = { official: string; common: string };
+export type Translations = Partial<Record<SupportedLanguages, TranslationValue>> & Record<string, TranslationValue>;
+export type Cca3Codes = LiteralUnion<(typeof cca3Codes)[number]>;
+export type Cca2Codes = LiteralUnion<(typeof cca2Codes)[number]>;
+export type Capitals = LiteralUnion<(typeof capitals)[number]>;
