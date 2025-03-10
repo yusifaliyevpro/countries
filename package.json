@@ -34,7 +34,11 @@
     "email": "yusifaliyevpro@gmail.com",
     "url": "https://yusifaliyevpro.com/"
   },
-  "homepage": "https://github.com/rsp/node-caught#readme",
+  "homepage": "https://github.com/yusifaliyevpro/countries",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yusifaliyevpro/countries"
+  },
   "license": "MIT",
   "type": "commonjs",
   "description": "TypeScript wrapper for Rest Countries API to fetch country data by codes, capitals, or all countries with full typings.",
