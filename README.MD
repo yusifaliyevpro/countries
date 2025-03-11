@@ -70,7 +70,7 @@ Fetches countries by given codes (CCA3, CCA2, CIOC, CCN3).
 import { getCountriesByCodes } from "@yusifaliyevpro/countries";
 
 const data = await getCountriesByCodes({
-  codes: ["US", "AZ", "TR", "DE", "FR"],
+  codes: ["USA", "AZ", "268", "TR", "170", "FR", "EST"],
   fields: ["name", "capital", "region"],
 });
 ```

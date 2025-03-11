@@ -1,9 +1,26 @@
 import { capitals } from "../data/capitals";
 import { cca2Codes } from "../data/cca2.codes";
 import { cca3Codes } from "../data/cca3.codes";
-import { supportedLanguages } from "../data/langs";
+import { ccn3Codes } from "../data/ccn3";
+import { ciocCodes } from "../data/cioc";
+import { currencies } from "../data/currencies";
+import { languages, supportedLanguages } from "../data/langs";
+import { regions } from "../data/regions";
+import { subregions } from "../data/subregions";
 import { LiteralUnion } from "./common";
 
+export type SupportedLanguages = (typeof supportedLanguages)[number];
+export type TranslationValue = { official: string; common: string };
+export type Translations = Partial<Record<SupportedLanguages, TranslationValue>> & Record<string, TranslationValue>;
+export type Cca3Code = LiteralUnion<(typeof cca3Codes)[number]>;
+export type Cca2Code = LiteralUnion<(typeof cca2Codes)[number]>;
+export type Capital = LiteralUnion<(typeof capitals)[number]>;
+export type CiocCode = LiteralUnion<(typeof ciocCodes)[number]>;
+export type Ccn3Code = LiteralUnion<(typeof ccn3Codes)[number]>;
+export type Region = (typeof regions)[number];
+export type Subregion = LiteralUnion<(typeof subregions)[number]>;
+export type Lang = LiteralUnion<(typeof languages)[number]>;
+export type Currency = LiteralUnion<(typeof currencies)[number]>;
 export interface Country {
   name: { common: string; official: string; nativeName?: { [key: string]: { official: string; common: string } } };
   tld?: string[];
@@ -41,10 +58,3 @@ export interface Country {
   capitalInfo: { latlng?: [number, number] };
   postalCode?: { format: string; regex?: string };
 }
-
-export type SupportedLanguages = (typeof supportedLanguages)[number];
-export type TranslationValue = { official: string; common: string };
-export type Translations = Partial<Record<SupportedLanguages, TranslationValue>> & Record<string, TranslationValue>;
-export type Cca3Codes = LiteralUnion<(typeof cca3Codes)[number]>;
-export type Cca2Codes = LiteralUnion<(typeof cca2Codes)[number]>;
-export type Capitals = LiteralUnion<(typeof capitals)[number]>;
