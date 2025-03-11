@@ -10,7 +10,7 @@ npm install @yusifaliyevpro/countries
 
 ## Usage
 
-The package exports several utility functions for interacting with the Rest Countries API. All Parameters returns are type-safe. The return type changes if you change `fields` paramater. I suggest to use CCA3 in the functions because it is very precise. For example only 206 out of 250 countries has CIOC code.
+The package exports several utility functions for interacting with the Rest Countries API. All Parameters returns are type-safe. The return type changes if you change `fields` paramater. I suggest to use CCA3 in the functions because it is very precise. For example only 206 out of 250 countries have CIOC code.
 
 The List of functions:
 
@@ -25,12 +25,13 @@ The List of functions:
 ### `getCountries`
 
 Fetches all countries or filters them based on independence status.
+`Note:` There are some countries, which have no `independent?` value (some political issues)
 
 #### Parameters:
 
 - `options` (optional):
   - `fields`: An array of country fields to retrieve (optional).
-  - `independent`: Filter by independent countries if `true` (optional - default: both countries).
+  - `independent`: Filter by independent countries if `true` (optional - default: all countries).
 
 #### Example:
 
