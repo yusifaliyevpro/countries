@@ -14,11 +14,11 @@ The package exports several utility functions for interacting with the Rest Coun
 
 The List of functions:
 
-- #### `getCountries`
-- #### `getCountriesByCodes`
-- #### `getCountryByCCA3`
-- #### `getCountryByCCA2`
-- #### `getCountryByCapital`
+- [**`getCountries`**](#getCountries)
+- [**`getCountriesByCodes`**](#getCountriesByCodes)
+- [**`getCountryByCCA3`**](#getCountryByCCA3)
+- [**`getCountryByCCA2`**](#getCountryByCCA2)
+- [**`getCountryByCapital`**](#getCountryByCapital)
 
 ---
 
