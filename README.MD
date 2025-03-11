@@ -1,6 +1,6 @@
 # REST Countries Typed API Package
 
-This package provides an easy and `TYPE-SAFE` way to interact with the [Rest Countries API](https://restcountries.com/), which offers detailed information about countries worldwide. You can fetch country data using various parameters like CCA2/CCA3 codes, capital cities, and more. `Thank you Alejandro Matos for this API.`
+This package provides an easy and `TYPE-SAFE` way to interact with the [Rest Countries API](https://restcountries.com/), which offers detailed information about countries worldwide. You can fetch country data using various parameters like CCA2/CCA3 codes, capital cities, and more. I will add all functionalities to package ASAP. `Thank you Alejandro Matos for this API.`
 
 ## Installation
 
@@ -11,6 +11,14 @@ npm install @yusifaliyevpro/countries
 ## Usage
 
 The package exports several utility functions for interacting with the Rest Countries API. All Parameters returns are type-safe. The return type changes if you change `fields` paramater. I suggest to use CCA3 in the functions because it is very precise. For example only 206 out of 250 countries has CIOC code.
+
+The List of functions:
+
+- #### `getCountries`
+- #### `getCountriesByCodes`
+- #### `getCountryByCCA3`
+- #### `getCountryByCCA2`
+- #### `getCountryByCapital`
 
 ---
 
@@ -136,7 +144,7 @@ const germany = await getCountryByCapital({
 
 ## Available Fields
 
-You can specify which fields to retrieve. Full list of available fields:
+You can specify which fields to retrieve. The fields parameter will give autocomplete suggestions. Full list of available fields:
 
 - `name`: Object with common, official, and native names
 - `tld`: Top-level domain
