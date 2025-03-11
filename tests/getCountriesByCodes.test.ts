@@ -1,4 +1,5 @@
-import { API_BASE_URL, getCountriesByCodes } from "../src";
+import { getCountriesByCodes } from "../src";
+import { API_BASE_URL } from "../src/constants";
 
 test("fetchs specific countries correctly", async () => {
   const countries = await getCountriesByCodes({ codes: ["aze,tr"] });

@@ -1,4 +1,5 @@
-import { API_BASE_URL, getCountries } from "../src";
+import { getCountries } from "../src";
+import { API_BASE_URL } from "../src/constants";
 
 test("fetchs all countries correctly", async () => {
   const countries = await getCountries();

@@ -1,4 +1,5 @@
-import { API_BASE_URL, getCountryByCapital } from "../src";
+import { getCountryByCapital } from "../src";
+import { API_BASE_URL } from "../src/constants";
 
 test("fetch specific country by Capital", async () => {
   const azerbaijan = await getCountryByCapital({ capital: "Baku" });

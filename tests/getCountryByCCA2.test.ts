@@ -1,4 +1,5 @@
-import { API_BASE_URL, getCountryByCCA2 } from "../src";
+import { getCountryByCCA2 } from "../src";
+import { API_BASE_URL } from "../src/constants";
 
 test("fetch specific country by CCA2", async () => {
   const azerbaijan = await getCountryByCCA2({ cca2: "az" });
@@ -8,6 +9,6 @@ test("fetch specific country by CCA2", async () => {
 
 test("fetch specific fields of country by CCA2", async () => {
   const azerbaijan = await getCountryByCCA2({ cca2: "az", fields: ["car", "capital", "latlng"] });
-  const apiResponse = (await (await fetch(`${API_BASE_URL}/alpha/az?fields=car,capital,latlng`)).json())[0];
+  const apiResponse = await (await fetch(`${API_BASE_URL}/alpha/az?fields=car,capital,latlng`)).json();
   expect(azerbaijan).toEqual(apiResponse);
 });

@@ -1,6 +1,5 @@
+import { API_BASE_URL } from "./constants";
 import { Capitals, Cca2Codes, Cca3Codes, Country } from "./types/country";
-
-const API_BASE_URL = "https://restcountries.com/v3.1";
 
 export async function getCountries<T extends keyof Country>(options?: {
   fields?: T[];
