@@ -1,6 +1,6 @@
 # REST Countries Typed API Package
 
-This package provides an easy and `TYPE-SAFE` way to interact with the [Rest Countries API](https://restcountries.com/), which offers detailed information about countries worldwide. You can fetch country data using various parameters like CCA2/CCA3 codes, capital cities, and more. I will add all functionalities to package ASAP. `Thank you Alejandro Matos for this API.`
+This package provides an easy and `TYPE-SAFE` way to interact with the [Rest Countries API](https://restcountries.com/), which offers detailed information about countries worldwide. You can fetch country data using various parameters like CCA2/CCA3/CIOC/CCN3 codes, capital cities, languages, regions, subregions, translations, demonyms, currencies. `Thanks to Alejandro Matos for this API.`
 
 ## Installation
 
@@ -10,28 +10,40 @@ npm install @yusifaliyevpro/countries
 
 ## Usage
 
-The package exports several utility functions for interacting with the Rest Countries API. All Parameters returns are type-safe. The return type changes if you change `fields` paramater. I suggest to use CCA3 in the functions because it is very precise. For example only 206 out of 250 countries have CIOC code.
+The package exports several utility functions for interacting with the Rest Countries API. All Parameter returns are type-safe. The return type changes if you change `fields` paramater. I suggest to use CCA3 in the functions because it is very precise. For example only 206 out of 250 countries have CIOC code.
+
+**`Note:`** If you don't set the fields parameter, all data will be fetched.
 
 The List of functions:
 
 - [**`getCountries`**](#getCountries)
 - [**`getCountriesByCodes`**](#getCountriesByCodes)
-- [**`getCountryByCCA3`**](#getCountryByCCA3)
-- [**`getCountryByCCA2`**](#getCountryByCCA2)
+- [**`getCountriesByRegion`**](#getCountriesByRegion)
+- [**`getCountriesBySubregion`**](#getCountriesBySubregion)
+- [**`getCountriesByLang`**](#getCountriesByLang)
+- [**`getCountriesByCurrency`**](#getCountriesByCurrency)
+- [**`getCountryByCode`**](#getCountryByCode)
 - [**`getCountryByCapital`**](#getCountryByCapital)
+- [**`getCountryByTranslation`**](#getcountrybytranslation)
+- [**`getCountryByDemonym`**](#getcountrybydemonym)
+
+Additional information:
+
+- **`Type Definitions`** **(coming soon)**
+- [**`Available Fields`**](#available-fields)
+- [**`Error handling`**](#error-handling)
 
 ---
 
 ### `getCountries`
 
 Fetches all countries or filters them based on independence status.
-`Note:` There are some countries, which have no `independent?` value (some political issues)
+`Note:` Some countries do not have an `independent` value (due to political reasons), so they won't be fetched if you set the independent parameter.
 
 #### Parameters:
 
-- `options` (optional):
-  - `fields`: An array of country fields to retrieve (optional).
-  - `independent`: Filter by independent countries if `true` (optional - default: all countries).
+- `fields`: An array of country fields to retrieve (optional).
+- `independent`: Filter by independent countries if `true` (optional - default: all countries).
 
 #### Example:
 
@@ -42,7 +54,7 @@ import { getCountries } from "@yusifaliyevpro/countries";
 const countries = await getCountries();
 
 // Fetch all countries with specific fields
-const independentCountries = await getCountries({
+const countries = await getCountries({
   fields: ["name", "capital"],
 });
 
@@ -57,11 +69,11 @@ const independentCountries = await getCountries({
 
 ### `getCountriesByCodes`
 
-Fetches countries by given codes (CCA3, CCA2, CIOC, CCN3).
+Fetches countries by given codes.
 
 #### Parameters:
 
-- `codes`: Array of country codes (CCA3, CCA2, CIOC, CCN3).
+- `codes`: Array of country CCA3, CCA2, CCN3, CIOC codes (case-insensitive) (autocomplete).
 - `fields` (optional): Array of fields to retrieve.
 
 #### Example:
@@ -69,6 +81,7 @@ Fetches countries by given codes (CCA3, CCA2, CIOC, CCN3).
 ```typescript
 import { getCountriesByCodes } from "@yusifaliyevpro/countries";
 
+// Fetch selected countries with specific fields
 const data = await getCountriesByCodes({
   codes: ["USA", "AZ", "268", "TR", "170", "FR", "EST"],
   fields: ["name", "capital", "region"],
@@ -77,45 +90,166 @@ const data = await getCountriesByCodes({
 
 ---
 
-### `getCountryByCCA3`
+### `getCountriesByRegion`
 
-Fetches country data by CCA3 code.
+Fetches countries by region name.
 
 #### Parameters:
 
-- `cca3`: The CCA3 country code.
+- `region`: Name of region you want to fetch (case-insensitive) (autocomplete).
 - `fields` (optional): Array of fields to retrieve.
 
 #### Example:
 
 ```typescript
-import { getCountryByCCA3 } from "@yusifaliyevpro/countries";
+import { getCountriesByRegion } from "@yusifaliyevpro/countries";
 
-const azerbaijan = await getCountryByCCA3({
-  cca3: "AZE",
-  fields: ["name", "capital", "population"],
+// Fetch Countries which are located in America
+const data = await getCountriesByRegion({
+  region: "Americas",
 });
 ```
 
 ---
 
-### `getCountryByCCA2`
+### `getCountriesBySubregion`
 
-Fetches country data by CCA2 code.
+Fetches countries by subregion name.
 
 #### Parameters:
 
-- `cca2`: The CCA2 country code.
+- `subregion`: Name of subregion you want to fetch (case-insensitive) (autocomplete).
 - `fields` (optional): Array of fields to retrieve.
 
 #### Example:
 
 ```typescript
-import { getCountryByCCA2 } from "@yusifaliyevpro/countries";
+import { getCountriesBySubregion } from "@yusifaliyevpro/countries";
 
-const india = await getCountryByCCA2({
-  cca2: "IN",
-  fields: ["name", "area", "languages"],
+// Fetch all countries which locates in Central Europe
+// with specific fields
+const data = await getCountriesBySubregion({
+  subregion: "Central Europe",
+  fields: ["capital", "area", "population"],
+});
+```
+
+---
+
+### `getCountriesByLang`
+
+Fetches countries by language.
+
+#### Parameters:
+
+- `lang`: Language of countries you want to fetch (case-insensitive) (autocomplete).
+- `fields` (optional): Array of fields to retrieve.
+
+#### Example:
+
+```typescript
+import { getCountriesByLang } from "@yusifaliyevpro/countries";
+
+// Fetch countries which speaks Spanish with all fields
+const data = await getCountriesByLang({
+  lang: "Spanish",
+});
+```
+
+---
+
+### `getCountriesByCurrency`
+
+Fetches countries by currency.
+
+#### Parameters:
+
+- `currency`: Currency of countries you want to fetch (case-insensitive) (autocomplete).
+- `fields` (optional): Array of fields to retrieve.
+
+#### Example:
+
+```typescript
+import { getCountriesByCurrency } from "@yusifaliyevpro/countries";
+
+// Fetch countries which use Euro with specific fields
+const data = await getCountriesByCurrency({
+  currency: "Euro",
+  fields: ["car", "capital", "fifa", "cca3"],
+});
+```
+
+---
+
+### `getCountryByCode`
+
+Fetches country data by code.
+
+#### Parameters:
+
+- `code`: The country `CCA3`, CCA2, CCN3 or CIOC code (case-insensitive) (autocomplete).
+- `fields` (optional): Array of fields to retrieve.
+
+#### Example:
+
+```typescript
+import { getCountryByCode } from "@yusifaliyevpro/countries";
+
+// Fetch Azerbaijan with all fields
+const azerbaijan = await getCountryByCode({
+  code: "AZE",
+});
+
+// Fetch Germany with specific fields
+const germany = await getCountryByCode({
+  code: "GER",
+  fields: ["name", "cca2", "population"],
+});
+```
+
+---
+
+### `getCountryByTranslation`
+
+Fetches a country by its translation.
+
+#### Parameters:
+
+- `translation`: Translation of the name of country you want to fetch (case-insensitive).
+- `fields` (optional): Array of fields to retrieve.
+
+#### Example:
+
+```typescript
+import { getCountryByTranslation } from "@yusifaliyevpro/countries";
+
+// Fetch country which has translation "alemania" with specific fields
+const germany = await getCountryByTranslation({
+  translation: "alemania",
+  fields: ["car", "capital", "fifa", "cca3"],
+});
+```
+
+---
+
+### `getCountryByDemonym`
+
+Fetches a country by its demonym.
+
+#### Parameters:
+
+- `demonym`: Demonym of the citizenship of country you want to fetch (case-insensitive).
+- `fields` (optional): Array of fields to retrieve.
+
+#### Example:
+
+```typescript
+import { getCountryByDemonym } from "@yusifaliyevpro/countries";
+
+// Fetch the country whose citizens are called "Peruvian" with specific fields
+const peru = await getCountryByDemonym({
+  demonym: "peruvian",
+  fields: ["car", "capital", "fifa", "cca3"],
 });
 ```
 
@@ -123,11 +257,11 @@ const india = await getCountryByCCA2({
 
 ### `getCountryByCapital`
 
-Fetches country data by capital city.
+Fetches country data based on the capital city.
 
 #### Parameters:
 
-- `capital`: Capital city name (case-insensitive).
+- `capital`: Capital city name (case-insensitive) (autocomplete).
 - `fields` (optional): Array of fields to retrieve.
 
 #### Example:
@@ -135,6 +269,7 @@ Fetches country data by capital city.
 ```typescript
 import { getCountryByCapital } from "@yusifaliyevpro/countries";
 
+// Fetch Germany with specific fields
 const germany = await getCountryByCapital({
   capital: "Berlin",
   fields: ["name", "flag", "currencies"],
@@ -182,48 +317,23 @@ You can specify which fields to retrieve. The fields parameter will give autocom
 #### Example with fields:
 
 ```typescript
-const country = await getCountryByCCA3({
-  cca3: "AZE",
+const country = await getCountryByCode({
+  code: "TUR",
   fields: ["name", "capital", "population"],
 });
 ```
 
-<!-- ---
-
-## Types
-
-### `Cca2Codes`, `Cca3Codes`, `Capitals`, and `Country`
-
-- `Cca2Codes`: ISO 3166-1 alpha-2 two-letter codes.
-- `Cca3Codes`: ISO 3166-1 alpha-3 three-letter codes.
-- `Capitals`: Capital cities.
-- `Country`: Full country object.
-
-#### Example:
-
-```typescript
-import { Cca3Codes } from "@yusifaliyevpro/countries";
-
-const code: Cca3Codes = "USA";
-```
-
---- -->
-
 ## Error Handling
 
-Errors are handled gracefully and logged to console.
+Errors are handled gracefully, type-safe, and logged to the console.
 
 #### Example:
 
 ```typescript
-const data = await getCountryByCCA3({
-  cca3: "XXX",
+const data = await getCountryByCode({
+  code: "XXX",
   fields: ["name"],
-}); // data will be null and an error message will be printed
-
-if (!data) {
-  console.log("Country not found!");
-}
+}); // data will be null and an error message will be printed (by library)
 ```
 
 ---

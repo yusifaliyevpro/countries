@@ -142,3 +142,39 @@ export async function getCountryByCapital<T extends keyof Country>({
     return null;
   }
 }
+
+export async function getCountryByTranslation<T extends keyof Country>({
+  translation,
+  fields,
+}: {
+  translation: string;
+  fields?: T[];
+}): Promise<Pick<Country, T> | null> {
+  try {
+    const api = constructAPI({ route: "translation", query: translation, fields });
+    const response = await fetch(api.toString());
+    if (!response.ok) console.log(`Could not fetch country data for Capital: ${translation}. Status: ${response.status}`);
+    return response.status === 200 && (await response.json())[0];
+  } catch (error) {
+    console.log("An error occurred while fetching the country data. Please try again later.");
+    return null;
+  }
+}
+
+export async function getCountryByDemonym<T extends keyof Country>({
+  demonym,
+  fields,
+}: {
+  demonym: string;
+  fields?: T[];
+}): Promise<Pick<Country, T> | null> {
+  try {
+    const api = constructAPI({ route: "demonym", query: demonym, fields });
+    const response = await fetch(api.toString());
+    if (!response.ok) console.log(`Could not fetch country data for Capital: ${demonym}. Status: ${response.status}`);
+    return response.status === 200 && (await response.json())[0];
+  } catch (error) {
+    console.log("An error occurred while fetching the country data. Please try again later.");
+    return null;
+  }
+}
