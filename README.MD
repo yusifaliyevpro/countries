@@ -376,16 +376,18 @@ import type { Country, Region, Cca2Code } from "@yusifaliyevpro/countries/types"
 
 ### Country Data Types
 
+**`Note:` If a long time has passed since the last update, the type data may be outdated.**
+
 - **`Country`**: Comprehensive type for country objects with properties like name, codes, currencies, languages, etc.
-- **`Cca2Code`**: ISO 3166-1 alpha-2 country codes (two-letter)
-- **`Cca3Code`**: ISO 3166-1 alpha-3 country codes (three-letter)
-- **`Ccn3Code`**: ISO 3166-1 numeric country codes
-- **`CiocCode`**: International Olympic Committee country codes
-- **`Capital`**: Capital city names
+- **`Cca2Code`**: ISO 3166-1 alpha-2 country codes (two-letter) (accept any string ✅)
+- **`Cca3Code`**: ISO 3166-1 alpha-3 country codes (three-letter) (accept any string ✅)
+- **`Ccn3Code`**: ISO 3166-1 numeric country codes (accept any string ✅)
+- **`CiocCode`**: International Olympic Committee country codes (accept any string ✅)
+- **`Capital`**: Capital city names (accept any string ✅)
 - **`Region`**: World regions (e.g., "Africa", "Americas")
-- **`Subregion`**: World subregions (e.g., "Northern Africa", "South America")
-- **`Lang`**: Language codes
-- **`Currency`**: Currency codes
+- **`Subregion`**: World subregions (e.g., "Northern Africa", "South America") (accept any string ✅)
+- **`Lang`**: Language codes (accept any string ✅)
+- **`Currency`**: Currency codes (accept any string ✅)
 - **`SupportedLanguages`**: Languages supported for translations
 
 ### Example Usage
