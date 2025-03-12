@@ -23,7 +23,8 @@ export function constructAPI({ route = "all", query = "", fields, status, codes,
 }
 
 export function handleNotFoundError(ok: boolean) {
-  if (!ok) console.log("Couldn't find any country that matches your query");
+  if (!ok)
+    console.log("Couldn't find any country that matches your query, if you think it is issue please submit it via github issues");
 }
 
 export function handleNetworkError(error: any) {
