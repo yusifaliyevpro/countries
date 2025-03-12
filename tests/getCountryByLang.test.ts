@@ -12,3 +12,8 @@ test("fetch specific fields of countries by lang", async () => {
   const apiResponse = await (await fetch(`${API_BASE_URL}/lang/turkish?fields=car,capital,latlng`)).json();
   expect(azerbaijan).toEqual(apiResponse);
 });
+
+test("should return null", async () => {
+  const azerbaijan = await getCountriesByLang({ lang: "aaabbbcc", fields: ["car", "capital", "latlng"] });
+  expect(azerbaijan).toEqual(null);
+});

@@ -12,3 +12,8 @@ test("fetchs specific countries with specific fields bu Translation correctly", 
   const apiResponse = (await (await fetch(`${API_BASE_URL}/translation/Saksamaa?fields=area,startOfWeek`)).json())[0];
   expect(countries).toEqual(apiResponse);
 });
+
+test("should return null", async () => {
+  const countries = await getCountryByTranslation({ translation: "aaabccc", fields: ["startOfWeek", "area"] });
+  expect(countries).toEqual(null);
+});

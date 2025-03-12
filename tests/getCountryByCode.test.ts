@@ -12,3 +12,8 @@ test("fetch specific fields of country by Code", async () => {
   const apiResponse = await (await fetch(`${API_BASE_URL}/alpha/az?fields=car,capital,latlng`)).json();
   expect(azerbaijan).toEqual(apiResponse);
 });
+
+test("should return null", async () => {
+  const azerbaijan = await getCountryByCode({ code: "aaaabccc", fields: ["car", "capital", "latlng"] });
+  expect(azerbaijan).toEqual(null);
+});

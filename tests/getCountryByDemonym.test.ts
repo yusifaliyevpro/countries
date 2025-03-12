@@ -12,3 +12,8 @@ test("fetchs specific countries with specific fields by Demonym correctly", asyn
   const apiResponse = (await (await fetch(`${API_BASE_URL}/demonym/peruvian?fields=area,startOfWeek`)).json())[0];
   expect(countries).toEqual(apiResponse);
 });
+
+test("should return null", async () => {
+  const countries = await getCountryByDemonym({ demonym: "aaabbbcccc", fields: ["startOfWeek", "area"] });
+  expect(countries).toEqual(null);
+});

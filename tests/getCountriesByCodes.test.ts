@@ -12,3 +12,8 @@ test("fetchs specific countries with specific fields correctly", async () => {
   const apiResponse = await (await fetch(`${API_BASE_URL}/alpha?codes=aze,tr&fields=area,startOfWeek`)).json();
   expect(countries).toEqual(apiResponse);
 });
+
+test("should return null", async () => {
+  const countries = await getCountriesByCodes({ codes: ["aaaaabbbb"], fields: ["startOfWeek", "area"] });
+  expect(countries).toEqual(null);
+});

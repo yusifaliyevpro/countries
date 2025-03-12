@@ -12,3 +12,8 @@ test("fetchs specific countries with specific fields bu Name correctly", async (
   const apiResponse = await (await fetch(`${API_BASE_URL}/name/aruba?fields=area,startOfWeek&fullText=true`)).json();
   expect(countries).toEqual(apiResponse);
 });
+
+test("should return null", async () => {
+  const countries = await getCountriesByName({ name: "akskaks", fullText: true, fields: ["startOfWeek", "area"] });
+  expect(countries).toEqual(null);
+});

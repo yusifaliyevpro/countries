@@ -30,7 +30,7 @@ The List of functions:
 
 Additional information:
 
-- **`Type Definitions`** **(coming soon)**
+- [**`Available Types`**](#available-types)
 - [**`Available Fields`**](#available-fields)
 - [**`Error handling`**](#error-handling)
 
@@ -361,6 +361,53 @@ const country = await getCountryByCode({
   fields: ["name", "capital", "population"],
 });
 ```
+
+---
+
+# Type Definitions
+
+This package exports TypeScript type definitions for working with country data. You can import these types from the dedicated types subpath:
+
+```typescript
+import type { Country, Region, Cca2Code } from "@yusifaliyevpro/countries/types";
+```
+
+## Available Types
+
+### Country Data Types
+
+- **`Country`**: Comprehensive type for country objects with properties like name, codes, currencies, languages, etc.
+- **`Cca2Code`**: ISO 3166-1 alpha-2 country codes (two-letter)
+- **`Cca3Code`**: ISO 3166-1 alpha-3 country codes (three-letter)
+- **`Ccn3Code`**: ISO 3166-1 numeric country codes
+- **`CiocCode`**: International Olympic Committee country codes
+- **`Capital`**: Capital city names
+- **`Region`**: World regions (e.g., "Africa", "Americas")
+- **`Subregion`**: World subregions (e.g., "Northern Africa", "South America")
+- **`Lang`**: Language codes
+- **`Currency`**: Currency codes
+- **`SupportedLanguages`**: Languages supported for translations
+
+### Example Usage
+
+```typescript
+import { getAllCountries } from "@yusifaliyevpro/countries";
+import type { Country, Cca2Code } from "@yusifaliyevpro/countries/types";
+
+// Type-safe country code
+const countryCode: Cca2Code = "US";
+
+// Get countries with proper typing
+const countries: Country[] = getAllCountries();
+
+// Type-safe function parameters
+function getCountryByCode(code: Cca2Code): Country | undefined {
+  return countries.find((country) => country.cca2 === code);
+}
+// Of course you can use this package's type-safe getCountryByCode method too
+```
+
+All types provide autocompletion and type checking for better developer experience when working with country data.
 
 ## Error Handling
 

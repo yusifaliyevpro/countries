@@ -12,3 +12,8 @@ test("fetchs specific countries with specific fields bu Subregion correctly", as
   const apiResponse = await (await fetch(`${API_BASE_URL}/subregion/Central Europe?fields=area,startOfWeek`)).json();
   expect(countries).toEqual(apiResponse);
 });
+
+test("should return null", async () => {
+  const countries = await getCountriesBySubregion({ subregion: "aaaaaaabbb", fields: ["startOfWeek", "area"] });
+  expect(countries).toEqual(null);
+});

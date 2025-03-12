@@ -10,8 +10,6 @@ import { subregions } from "../data/subregions";
 import { LiteralUnion } from "./common";
 
 export type SupportedLanguages = (typeof supportedLanguages)[number];
-export type TranslationValue = { official: string; common: string };
-export type Translations = Partial<Record<SupportedLanguages, TranslationValue>> & Record<string, TranslationValue>;
 export type Cca3Code = LiteralUnion<(typeof cca3Codes)[number]>;
 export type Cca2Code = LiteralUnion<(typeof cca2Codes)[number]>;
 export type Capital = LiteralUnion<(typeof capitals)[number]>;
@@ -21,7 +19,11 @@ export type Region = (typeof regions)[number];
 export type Subregion = LiteralUnion<(typeof subregions)[number]>;
 export type Lang = LiteralUnion<(typeof languages)[number]>;
 export type Currency = LiteralUnion<(typeof currencies)[number]>;
-export interface Country {
+
+type TranslationValue = { official: string; common: string };
+type Translations = Partial<Record<SupportedLanguages, TranslationValue>> & Record<string, TranslationValue>;
+
+export type Country = {
   name: { common: string; official: string; nativeName?: { [key: string]: { official: string; common: string } } };
   tld?: string[];
   cca2: string;
@@ -57,4 +59,4 @@ export interface Country {
   startOfWeek: string;
   capitalInfo: { latlng?: [number, number] };
   postalCode?: { format: string; regex?: string };
-}
+};

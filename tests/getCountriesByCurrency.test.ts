@@ -12,3 +12,8 @@ test("fetch specific fields of country by currency", async () => {
   const apiResponse = await (await fetch(`${API_BASE_URL}/currency/euro?fields=car,capital,latlng`)).json();
   expect(azerbaijan).toEqual(apiResponse);
 });
+
+test("should return null", async () => {
+  const azerbaijan = await getCountriesByCurrency({ currency: "kskdskdkk", fields: ["car", "capital", "latlng"] });
+  expect(azerbaijan).toEqual(null);
+});
