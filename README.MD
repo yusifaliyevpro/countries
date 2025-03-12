@@ -30,7 +30,7 @@ The List of functions:
 
 Additional information:
 
-- [**`Available Types`**](#available-types)
+- [**`Type Definitions && Available Types`**](#type-definitions)
 - [**`Available Fields`**](#available-fields)
 - [**`Error handling`**](#error-handling)
 
