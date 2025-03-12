@@ -400,13 +400,14 @@ import type { Country, Cca2Code } from "@yusifaliyevpro/countries/types";
 const countryCode: Cca2Code = "US";
 
 // Get countries with proper typing
+// You don't need to specify Country[], return type will be automaticaly inferred
 const countries: Country[] = getAllCountries();
 
 // Type-safe function parameters
+// Of course you can use this package's type-safe getCountryByCode method too
 function getCountryByCode(code: Cca2Code): Country | undefined {
   return countries.find((country) => country.cca2 === code);
 }
-// Of course you can use this package's type-safe getCountryByCode method too
 ```
 
 All types provide autocompletion and type checking for better developer experience when working with country data.
