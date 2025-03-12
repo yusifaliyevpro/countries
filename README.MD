@@ -423,6 +423,20 @@ const data = await getCountryByCode({
   code: "XXX",
   fields: ["name"],
 }); // data will be null and an error message will be printed (by library)
+
+const usa = await getCountryByCode({
+  code: "usa",
+  fields: ["name", "population"],
+});
+
+// TypeScript Error, because you didn't add 'capital' to fields parameter
+console.log(usa.capital);
+
+// Type error due the 'mykey' is not in the available fields list
+const georgia = await getCountryByCode({
+  code: "geo",
+  fields: ["name", "mykey"],
+});
 ```
 
 ---
