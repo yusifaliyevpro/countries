@@ -18,6 +18,7 @@ The List of functions:
 
 - [**`getCountries`**](#getCountries)
 - [**`getCountriesByCodes`**](#getCountriesByCodes)
+- [**`getCountriesByName`**](#getCountriesByName)
 - [**`getCountriesByRegion`**](#getCountriesByRegion)
 - [**`getCountriesBySubregion`**](#getCountriesBySubregion)
 - [**`getCountriesByLang`**](#getCountriesByLang)
@@ -85,6 +86,44 @@ import { getCountriesByCodes } from "@yusifaliyevpro/countries";
 const data = await getCountriesByCodes({
   codes: ["USA", "AZ", "268", "TR", "170", "FR", "EST"],
   fields: ["name", "capital", "region"],
+});
+```
+
+---
+
+### `getCountriesByName`
+
+Fetches countries by given codes.
+
+#### Parameters:
+
+- `name`: Search by country name (case-insensitive).
+- `fullText`: Search by country’s full name (default: false) (boolean).
+- `fields` (optional): Array of fields to retrieve.
+
+#### Example:
+
+```typescript
+import { getCountriesByName } from "@yusifaliyevpro/countries";
+
+// Fetch countries which matches this query with specific fields
+const data = await getCountriesByName({
+  name: "deutschland",
+  fields: ["name", "capital", "demonyms", "cioc"],
+});
+
+// It will return null because 'deutschland' is a common name
+const data = await getCountriesByName({
+  name: "deutschland",
+  fullText: true,
+  fields: ["name", "capital", "demonyms", "cioc"],
+});
+
+// Fetch countries which matches this query with specific fields
+const data = await getCountriesByName({
+  name: "aruba",
+  fullText: true,
+  fields: ["name", "capital", "demonyms", "cioc"],
 });
 ```
 
@@ -209,6 +248,29 @@ const germany = await getCountryByCode({
 
 ---
 
+### `getCountryByCapital`
+
+Fetches country data based on the capital city.
+
+#### Parameters:
+
+- `capital`: Capital city name (case-insensitive) (autocomplete).
+- `fields` (optional): Array of fields to retrieve.
+
+#### Example:
+
+```typescript
+import { getCountryByCapital } from "@yusifaliyevpro/countries";
+
+// Fetch Germany with specific fields
+const germany = await getCountryByCapital({
+  capital: "Berlin",
+  fields: ["name", "flag", "currencies"],
+});
+```
+
+---
+
 ### `getCountryByTranslation`
 
 Fetches a country by its translation.
@@ -250,29 +312,6 @@ import { getCountryByDemonym } from "@yusifaliyevpro/countries";
 const peru = await getCountryByDemonym({
   demonym: "peruvian",
   fields: ["car", "capital", "fifa", "cca3"],
-});
-```
-
----
-
-### `getCountryByCapital`
-
-Fetches country data based on the capital city.
-
-#### Parameters:
-
-- `capital`: Capital city name (case-insensitive) (autocomplete).
-- `fields` (optional): Array of fields to retrieve.
-
-#### Example:
-
-```typescript
-import { getCountryByCapital } from "@yusifaliyevpro/countries";
-
-// Fetch Germany with specific fields
-const germany = await getCountryByCapital({
-  capital: "Berlin",
-  fields: ["name", "flag", "currencies"],
 });
 ```
 

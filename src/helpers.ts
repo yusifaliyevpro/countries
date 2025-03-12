@@ -7,15 +7,27 @@ export type ConstructAPI = {
   fields: (keyof Country)[] | undefined;
   status?: boolean;
   codes?: string;
+  fullText?: boolean;
 };
 
-export function constructAPI({ route = "all", query = "", fields, status, codes }: ConstructAPI) {
+export function constructAPI({ route = "all", query = "", fields, status, codes, fullText }: ConstructAPI) {
   const base_url = new URL(API_BASE_URL);
   if (status !== undefined) route = "independent";
 
   base_url.pathname += `/${route}` + `/${query.toLowerCase()}`;
   if (status !== undefined) base_url.searchParams.set("status", String(status));
+  if (fullText !== undefined) base_url.searchParams.set("fullText", String(fullText));
   if (codes) base_url.searchParams.append("codes", codes.toLowerCase());
   if (fields && !!fields.length) base_url.searchParams.set("fields", fields.join(","));
   return base_url;
+}
+
+export function handleNotFoundError(ok: boolean) {
+  if (!ok) console.log("Couldn't find any country that matches your query");
+}
+
+export function handleNetworkError(error: any) {
+  console.warn("A network or REST Countries API side error happened while fetching data. Try again later.");
+  console.warn("If the error happens again please inform me via GitHub Issues!\n");
+  console.error(error);
 }
