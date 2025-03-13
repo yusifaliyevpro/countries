@@ -1,19 +1,19 @@
 {
   "name": "@yusifaliyevpro/countries",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "publishConfig": {
     "access": "public"
   },
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./types": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.mjs",
-      "require": "./dist/types/index.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/types/index.js"
     }
   },
   "typesVersions": {
