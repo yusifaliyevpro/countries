@@ -1,4 +1,4 @@
-import { constructAPI, handleNetworkError } from "./helpers";
+import { constructAPI, handleNetworkError, handleNotFoundError } from "./helpers";
 import {
   GetCountriesParams,
   ByCapitalParams,
@@ -14,8 +14,6 @@ import {
 } from "./types/params";
 import { Country } from "./types";
 
-export { constructAPI };
-
 export async function getCountries<T extends keyof Country>(
   options?: GetCountriesParams<T>,
   fetchOptions?: RequestInit
@@ -23,6 +21,7 @@ export async function getCountries<T extends keyof Country>(
   try {
     const api = constructAPI({ fields: options?.fields, status: options?.independent });
     const response = await fetch(api.toString(), fetchOptions);
+    handleNotFoundError(response.ok);
     return response.ok ? await response.json() : null;
   } catch (error) {
     handleNetworkError(error);
@@ -37,6 +36,7 @@ export async function getCountriesByRegion<T extends keyof Country>(
   try {
     const api = constructAPI({ route: "region", query: region, fields });
     const response = await fetch(api.toString(), fetchOptions);
+    handleNotFoundError(response.ok);
     return response.ok ? await response.json() : null;
   } catch (error) {
     handleNetworkError(error);

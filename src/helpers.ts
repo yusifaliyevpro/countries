@@ -24,10 +24,10 @@ export function constructAPI({ route = "all", query = "", fields, status, codes,
   return base_url;
 }
 
-// export function handleNotFoundError(ok: boolean) {
-//   if (!ok)
-//     console.log("Couldn't find any country that matches your query, if you think it is issue please submit it via github issues");
-// }
+export function handleNotFoundError(ok: boolean) {
+  if (!ok)
+    console.log("Couldn't find any country that matches your query, if you think it is issue please submit it via github issues");
+}
 
 export function handleNetworkError(error: any) {
   console.warn("A network or REST Countries API side error happened while fetching data. Try again later.");
