@@ -1,8 +1,10 @@
 import { API_BASE_URL } from "./constants";
+import { routes } from "./data/api-routes";
 import { Country } from "./types";
 
+type Route = (typeof routes)[number];
 export type ConstructAPI = {
-  route?: string;
+  route?: Route;
   query?: string;
   fields: (keyof Country)[] | undefined;
   status?: boolean;
@@ -22,13 +24,15 @@ export function constructAPI({ route = "all", query = "", fields, status, codes,
   return base_url;
 }
 
-export function handleNotFoundError(ok: boolean) {
-  if (!ok)
-    console.log("Couldn't find any country that matches your query, if you think it is issue please submit it via github issues");
-}
+// export function handleNotFoundError(ok: boolean) {
+//   if (!ok)
+//     console.log("Couldn't find any country that matches your query, if you think it is issue please submit it via github issues");
+// }
 
 export function handleNetworkError(error: any) {
   console.warn("A network or REST Countries API side error happened while fetching data. Try again later.");
-  console.warn("If the error happens again please inform me via GitHub Issues!\n");
+  console.warn(
+    "If this error persists, please verify the status of the REST Countries API. If the issue continues, feel free to report it on GitHub: https://github.com/yusifaliyevpro/countries"
+  );
   console.error(error);
 }

@@ -30,6 +30,7 @@ The List of functions:
 
 Additional information:
 
+- [**`Fetch Options`**](#fetch-options)
 - [**`Type Definitions && Available Types`**](#type-definitions)
 - [**`Available Fields`**](#available-fields)
 - [**`Error handling`**](#error-handling)
@@ -317,6 +318,35 @@ const peru = await getCountryByDemonym({
 
 ---
 
+## Fetch Options
+
+The package supports custom `fetchOptions` to provide additional configurations for the underlying fetch requests. This is useful for scenarios like adding custom headers, enabling caching, or setting timeouts.
+
+#### Parameters:
+
+- `fetchOptions`: An object containing any valid options for the `fetch` API (optional).
+
+### Example Usage
+
+```typescript
+import { getCountries, getCountryByCode } from "@yusifaliyevpro/countries";
+
+// Example 1: Vanilla JavaScript Use Case
+// Note: REST Countries doesn't need API Token or method, just example
+const countries = await getCountries(
+  { fields: ["name", "capital"] },
+  { headers: { Authorization: "Bearer YOUR_API_TOKEN" }, method: "GET" }
+);
+
+// Example 2: Next.js with Cache Fetch Options
+const germany = await getCountryByCode(
+  { code: "GER", fields: ["name", "capital"] },
+  { next: { revalidate: 7 * 24 * 3600 }, cache: "force-cache" }
+);
+```
+
+---
+
 ## Available Fields
 
 You can specify which fields to retrieve. The fields parameter will give autocomplete suggestions. Full list of available fields:
@@ -373,8 +403,6 @@ import type { Country, Region, Cca2Code } from "@yusifaliyevpro/countries/types"
 ```
 
 ## Available Types
-
-### Country Data Types
 
 **`Note:` If a long time has passed since the last update, the type data may be outdated.**
 
