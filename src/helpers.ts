@@ -6,7 +6,7 @@ type Route = (typeof routes)[number];
 export type ConstructAPI = {
   route?: Route;
   query?: string;
-  fields: (keyof Country)[] | undefined;
+  fields: readonly (keyof Country)[] | undefined;
   status?: boolean;
   codes?: string;
   fullText?: boolean;
@@ -20,7 +20,8 @@ export function constructAPI({ route = "all", query = "", fields, status, codes,
   if (status !== undefined) base_url.searchParams.set("status", String(status));
   if (fullText !== undefined) base_url.searchParams.set("fullText", String(fullText));
   if (codes) base_url.searchParams.append("codes", codes.toLowerCase());
-  if (fields && !!fields.length) base_url.searchParams.set("fields", fields.join(","));
+  fields = Array.from(new Set(fields));
+  if (fields && fields.length) base_url.searchParams.set("fields", fields.join(","));
   return base_url;
 }
 

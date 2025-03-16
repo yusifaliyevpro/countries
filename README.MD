@@ -32,6 +32,8 @@ Additional information:
 
 - [**`Fetch Options`**](#fetch-options)
 - [**`Type Definitions && Available Types`**](#type-definitions)
+- [**`defineFields function`**](#definefields)
+- [**`CountryWith Type`**](#countrywithtypeof-fields)
 - [**`Available Fields`**](#available-fields)
 - [**`Error handling`**](#error-handling)
 
@@ -394,7 +396,7 @@ const country = await getCountryByCode({
 
 ---
 
-# Type Definitions
+## Type Definitions
 
 This package exports TypeScript type definitions for working with country data. You can import these types from the dedicated types subpath:
 
@@ -439,6 +441,87 @@ function getCountryByCode(code: Cca2Code): Country | undefined {
 ```
 
 All types provide autocompletion and type checking for better developer experience when working with country data.
+
+---
+
+## `defineFields`
+
+`defineFields` is a helper function that lets you define your fields array **with autocomplete and type checking**, and automatically infers a special type for those fields. Of course you can pass fields parameter directly and it will give you type-checking too. But sometimes you can need to export fields to use in another file.
+
+#### Example:
+
+```typescript
+import { defineFields, getCountryByCode } from "@yusifaliyevpro/countries";
+
+const countryFields = defineFields(["name", "capital", "population", "region", "cca3", "flags"]);
+
+const country = getCountryByCode({ code: "ger", fields: countryFields });
+```
+
+Now `countryFields` is fully typed and you can reuse it safely across your app.
+
+---
+
+## `CountryWith<typeof fields>`
+
+`CountryWith` is a generic type that takes the `fields` array and returns a **country type containing only those fields**.
+
+#### Example React Component prop type:
+
+```tsx
+import { CountryWith } from "@yusifaliyevpro/countries";
+
+const countryFields = defineFields(["name", "capital", "population", "region", "cca3", "flags"]);
+
+// Usage in React component
+// Now `Country` type includes only fields listed in `countryFields`
+export function CountryCard({ country }: { country: CountryWith<typeof countryFields> }) {
+  return (
+    <div>
+      <h1>{country.name.common}</h1>
+      <p>Capital: {country.capital?.[0]}</p>
+      <p>Population: {country.population.toLocaleString()}</p>
+    </div>
+  );
+}
+```
+
+---
+
+### ⚡ Example Full Usage
+
+```tsx
+// src/lib/fields.ts - Define countryFields
+export const countryFields = defineFields(["name", "capital", "population", "region"]);
+
+// src/app/page.tsx
+// Fetch data in Page component
+export default function CountryPage() {
+  const country = await getCountryByCode({ code: "AZ", fields: countryFields });
+  return (
+    <main>
+      <CountryCard country={country} />
+    </main>
+  );
+}
+
+// src/components/CountryCard.tsx
+// Use in component safely
+export function CountryCard({ country }: { country: CountryWith<typeof countryFields> }) {
+  return <div>{country.name.common}</div>;
+}
+```
+
+---
+
+### ✅ Benefits
+
+- **No need for manual type definition** for returned country.
+- **Type-safe fields**: Autocomplete and error checking for fields.
+- **Reusability**: Use same `fields` and type across app.
+- Prevents mistakes when accessing fields not fetched.
+
+---
 
 ## Error Handling
 

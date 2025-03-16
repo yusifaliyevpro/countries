@@ -9,6 +9,8 @@ import { regions } from "../data/regions";
 import { subregions } from "../data/subregions";
 import { LiteralUnion } from "./common";
 
+export type CountryWith<T extends readonly (keyof Country)[]> = Pick<Country, T[number]>;
+
 export type SupportedLanguages = (typeof supportedLanguages)[number];
 export type Cca3Code = LiteralUnion<(typeof cca3Codes)[number]>;
 export type Cca2Code = LiteralUnion<(typeof cca2Codes)[number]>;
