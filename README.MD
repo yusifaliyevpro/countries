@@ -30,10 +30,10 @@ The List of functions:
 
 Additional information:
 
+- [**`defineFields function`**](#definefields)
+- [**`CountryPicker Type`**](#countrypickertypeof-fields)
 - [**`Fetch Options`**](#fetch-options)
 - [**`Type Definitions && Available Types`**](#type-definitions)
-- [**`defineFields function`**](#definefields)
-- [**`CountryWith Type`**](#countrywithtypeof-fields)
 - [**`Available Fields`**](#available-fields)
 - [**`Error handling`**](#error-handling)
 
@@ -462,31 +462,9 @@ Now `countryFields` is fully typed and you can reuse it safely across your app.
 
 ---
 
-## `CountryWith<typeof fields>`
+## `CountryPicker<typeof fields>`
 
-`CountryWith` is a generic type that takes the `fields` array and returns a **country type containing only those fields**.
-
-#### Example React Component prop type:
-
-```tsx
-import { CountryWith } from "@yusifaliyevpro/countries";
-
-const countryFields = defineFields(["name", "capital", "population", "region", "cca3", "flags"]);
-
-// Usage in React component
-// Now `Country` type includes only fields listed in `countryFields`
-export function CountryCard({ country }: { country: CountryWith<typeof countryFields> }) {
-  return (
-    <div>
-      <h1>{country.name.common}</h1>
-      <p>Capital: {country.capital?.[0]}</p>
-      <p>Population: {country.population.toLocaleString()}</p>
-    </div>
-  );
-}
-```
-
----
+`CountryPicker` is a generic type that takes the `fields` array and returns a **country type containing only those fields**.
 
 ### ⚡ Example Full Usage
 
@@ -507,7 +485,7 @@ export default function CountryPage() {
 
 // src/components/CountryCard.tsx
 // Use in component safely
-export function CountryCard({ country }: { country: CountryWith<typeof countryFields> }) {
+export function CountryCard({ country }: { country: CountryPicker<typeof countryFields> }) {
   return <div>{country.name.common}</div>;
 }
 ```
