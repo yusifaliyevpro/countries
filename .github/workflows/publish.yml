@@ -60,8 +60,6 @@ jobs:
 
       - name: Tag release
         if: steps.check.outputs.version_changed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
