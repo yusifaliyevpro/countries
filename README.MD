@@ -1,4 +1,4 @@
-# REST Countries Typed API Package
+# REST Countries Typed API Package 🇦🇿 🇵🇪
 
 This package provides an easy and `TYPE-SAFE` way to interact with the [Rest Countries API](https://restcountries.com/), which offers detailed information about countries worldwide. You can fetch country data using various parameters like CCA2/CCA3/CIOC/CCN3 codes, capital cities, languages, regions, subregions, translations, demonyms, currencies. `Thanks to Alejandro Matos for this API.`
 
@@ -10,13 +10,13 @@ npm install @yusifaliyevpro/countries
 
 ## Usage
 
-The package exports several utility functions for interacting with the Rest Countries API. All Parameter returns are type-safe. The return type changes if you change `fields` paramater. I suggest to use CCA3 in the functions because it is very precise. For example only 206 out of 250 countries have CIOC code.
+The package uses `latest verison v3.1` of API and exports several utility functions for interacting with the Rest Countries API. All Parameter returns are type-safe. The return type changes if you change `fields` paramater. I suggest to use CCA3 in the functions because it is very precise. For example only 206 out of 250 countries have CIOC code.
 
 **`Note:`** If you don't set the fields parameter, all data will be fetched.
 
 The List of functions:
 
-- [**`getCountries`**](#getCountries)
+- [**`getCountries 🗺️`**](#getCountries)
 - [**`getCountriesByCodes`**](#getCountriesByCodes)
 - [**`getCountriesByName`**](#getCountriesByName)
 - [**`getCountriesByRegion`**](#getCountriesByRegion)
@@ -511,7 +511,7 @@ Errors are handled gracefully, type-safe, and logged to the console.
 const data = await getCountryByCode({
   code: "XXX",
   fields: ["name"],
-}); // data will be null and an error message will be printed (by library)
+}); // data will be null and an error message will be logged to console (by library)
 
 const usa = await getCountryByCode({
   code: "usa",
@@ -520,7 +520,7 @@ const usa = await getCountryByCode({
 
 // TypeScript Error, because you didn't add 'capital' to fields parameter
 console.log(usa.capital);
-
+                ^^^^^^^
 // Type error due the 'mykey' is not in the available fields list
 const georgia = await getCountryByCode({
   code: "geo",
