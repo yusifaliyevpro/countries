@@ -6,7 +6,7 @@ type Route = (typeof routes)[number];
 export type ConstructAPI = {
   route?: Route;
   query?: string;
-  fields: readonly (keyof Country)[] | undefined;
+  fields?: readonly (keyof Country)[] | undefined;
   status?: boolean;
   codes?: string;
   fullText?: boolean;
