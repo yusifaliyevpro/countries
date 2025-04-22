@@ -26,10 +26,10 @@ type TranslationValue = { official: string; common: string };
 type Translations = Partial<Record<SupportedLanguages, TranslationValue>> & Record<string, TranslationValue>;
 
 export type Country = {
-  name: { common: string; official: string; nativeName?: { [key: string]: { official: string; common: string } } };
-  tld?: string[];
+  name: { common: string; official: string; nativeName: { [key: string]: { official: string; common: string } } };
+  tld: string[];
   cca2: string;
-  ccn3?: string;
+  ccn3: string;
   cca3: string;
   cioc?: string;
   independent: boolean;
@@ -45,15 +45,16 @@ export type Country = {
   translations: Translations;
   latlng: [number, number];
   landlocked: boolean;
-  borders?: string[];
+  borders: string[];
   area: number;
+  demonyms: { [key: string]: { f: string; m: string } };
   demonyms: { [key: string]: { f: string; m: string } };
   flag: string;
   maps: { googleMaps: string; openStreetMaps: string };
   population: number;
-  gini?: { [year: string]: number };
-  fifa?: string;
-  car: { signs?: string[]; side: string };
+  gini: { [year: string]: number };
+  fifa: string;
+  car: { signs: string[]; side: string };
   timezones: string[];
   continents: string[];
   flags: { png: string; svg: string; alt?: string };
