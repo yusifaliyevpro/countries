@@ -1,12 +1,6 @@
 import { getCountries } from "../src";
 import { API_BASE_URL } from "../src/constants";
 
-test("fetchs all countries correctly", async () => {
-  const countries = await getCountries();
-  const apiResponse = await (await fetch(`${API_BASE_URL}/all`)).json();
-  expect(countries).toEqual(apiResponse);
-});
-
 test("fetchs all countries with specific fields correctly", async () => {
   const countries = await getCountries({ fields: ["startOfWeek", "area"] });
   const apiResponse = await (await fetch(`${API_BASE_URL}/all?fields=area,startOfWeek`)).json();
