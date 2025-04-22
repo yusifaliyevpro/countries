@@ -48,7 +48,6 @@ export type Country = {
   borders: string[];
   area: number;
   demonyms: { [key: string]: { f: string; m: string } };
-  demonyms: { [key: string]: { f: string; m: string } };
   flag: string;
   maps: { googleMaps: string; openStreetMaps: string };
   population: number;
