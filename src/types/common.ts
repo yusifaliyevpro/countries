@@ -1,1 +1,1 @@
-export type LiteralUnion<T extends U, U extends string = string> = T | Omit<U, T>;
+export type LiteralUnion<T> = T | (string & {});
