@@ -69,10 +69,5 @@
     "ts-jest": "^29.3.2",
     "tsdown": "^0.12.6",
     "typescript": "^5.8.3"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }
