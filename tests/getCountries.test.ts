@@ -8,8 +8,8 @@ test("fetchs all countries with specific fields correctly", async () => {
 });
 
 test("fetchs only independent countries", async () => {
-  const countries = await getCountries({ independent: false });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/independent?status=false`)).json();
+  const countries = await getCountries({ independent: false, fields: ["altSpellings", "name", "capital"] });
+  const apiResponse = await (await fetch(`${API_BASE_URL}/independent?status=false&fields=altSpellings,name,capital`)).json();
   expect(countries).toEqual(apiResponse);
 });
 
