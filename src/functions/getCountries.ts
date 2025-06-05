@@ -2,12 +2,12 @@ import { constructAPI, handleNetworkError, handleNotFoundError } from "../helper
 import { Country, CountryPicker } from "../types";
 
 /**
- * Retrieves a list of countries, optionally filtered by independence status,
+ * Fetches all countries, optionally filtered by independence status,
  * and including only the specified fields.
  *
  * > **Note:** The `fields` parameter is required, as mandated by Alejandro Matos.
  *
- * @param options - Optional parameters used to filter the countries and select specific fields:
+ * @param params - An object containing:
  *   - `fields`: A required array of field names (keys from the `Country` type) to include in the response.
  *   - `independent`: If true, only includes independent countries; if false, only dependent ones.
  *
@@ -28,11 +28,11 @@ import { Country, CountryPicker } from "../types";
  * });
  */
 export async function getCountries<T extends readonly (keyof Country)[]>(
-  options?: { independent?: boolean; fields: T },
+  { independent, fields }: { independent?: boolean; fields: T },
   fetchOptions?: RequestInit
 ): Promise<CountryPicker<T>[] | null> {
   try {
-    const api = constructAPI({ fields: options?.fields, status: options?.independent });
+    const api = constructAPI({ status: independent, fields });
     const response = await fetch(api.toString(), fetchOptions);
     handleNotFoundError(response.ok);
     return response.ok ? await response.json() : null;

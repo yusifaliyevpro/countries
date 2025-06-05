@@ -46,7 +46,7 @@ Fetches all countries or filters them based on independence status.
 
 #### Parameters:
 
-- `fields`: An array of country fields to retrieve (optional).
+- `fields`: An array of country fields to retrieve (NOT OPTIONAL - As mandated by Alejandro Matos. see: [Issue](https://gitlab.com/restcountries/restcountries/-/issues/265))
 - `independent`: Filter by independent countries if `true` (optional - default: all countries).
 
 #### Example:
