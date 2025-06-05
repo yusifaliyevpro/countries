@@ -2,7 +2,7 @@ import { constructAPI, handleNetworkError, handleNotFoundError } from "../helper
 import { Country, CountryPicker, Region } from "../types";
 
 /**
- * Fetches countries that belong to the specified world region,
+ * Fetches countries which belong to the specified world region,
  * optionally including only the specified fields.
  *
  * > **Note:** If `fields` is not provided, all available fields will be returned.
