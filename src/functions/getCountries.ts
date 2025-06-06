@@ -27,7 +27,7 @@ import { Country, CountryPicker } from "../types";
  *   fields: ["name", "area"]
  * });
  */
-export async function getCountries<T extends readonly (keyof string)[]>(
+export async function getCountries<T extends readonly (keyof Country)[]>(
   { independent, fields }: { independent?: boolean; fields: T },
   fetchOptions?: RequestInit
 ): Promise<CountryPicker<T>[] | null> {
