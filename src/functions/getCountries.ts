@@ -5,7 +5,7 @@ import { Country, CountryPicker } from "../types";
  * Fetches all countries, optionally filtered by independence status,
  * and including only the specified fields.
  *
- * > **Note:** The `fields` parameter is required, as mandated by Alejandro Matos.
+ * > **Note:** The `fields` parameter is required, as mandated by Alejandro Matos See: {@link https://gitlab.com/restcountries/restcountries/-/issues/265}.
  *
  * @param params - An object containing:
  *   - `fields`: A required array of field names (keys from the `Country` type) to include in the response.
