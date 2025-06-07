@@ -5,7 +5,8 @@ import { Country, CountryPicker } from "../types";
  * Fetches all countries, optionally filtered by independence status,
  * and including only the specified fields.
  *
- * > **Note:** The `fields` parameter is required, as mandated by Alejandro Matos See: {@link https://gitlab.com/restcountries/restcountries/-/issues/265}.
+ * > **Note:** The `fields` parameter is required and you can only specify upto 10 fields,
+ * as mandated by Alejandro Matos See: {@link https://gitlab.com/restcountries/restcountries/-/issues/265}.
  *
  * @param params - An object containing:
  *   - `fields`: A required array of field names (keys from the `Country` type) to include in the response.
@@ -27,11 +28,12 @@ import { Country, CountryPicker } from "../types";
  *   fields: ["name", "area"]
  * });
  */
-export async function getCountries<T extends readonly (keyof Country)[]>(
+export async function getCountries<T extends readonly (keyof Country)[] & { length: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 }>(
   { independent, fields }: { independent?: boolean; fields: T },
   fetchOptions?: RequestInit
 ): Promise<CountryPicker<T>[] | null> {
   try {
+    if (fields.length > 10) console.error("You can specify up to 10 fields only");
     const api = constructAPI({ status: independent, fields });
     const response = await fetch(api.toString(), fetchOptions);
     handleNotFoundError(response.ok);
