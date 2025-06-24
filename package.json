@@ -63,9 +63,9 @@
   "description": "TypeScript wrapper for Rest Countries API to fetch country data by codes, capitals, or all countries with full typings.",
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.3",
-    "jest": "^29.7.0",
+    "jest": "^30.0.2",
     "ts-jest": "^29.3.4",
     "tsdown": "^0.12.7",
     "typescript": "^5.8.3"
