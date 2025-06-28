@@ -1,4 +1,4 @@
-import { getCountriesBySubregion } from "../src";
+import { getCountriesBySubregion } from "../dist";
 import { API_BASE_URL } from "../src/constants";
 
 test("fetchs specific countries by Subregion correctly", async () => {

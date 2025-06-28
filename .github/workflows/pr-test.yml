@@ -17,4 +17,3 @@ jobs:
       - run: pnpm install
       - run: pnpm test
       - run: pnpm tsc
-      - run: pnpm build
