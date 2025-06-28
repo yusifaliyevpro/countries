@@ -1,4 +1,4 @@
-import { getCountries } from "../src";
+import { getCountries } from "../dist";
 import { API_BASE_URL } from "../src/constants";
 
 test("fetchs all countries with specific fields correctly", async () => {

@@ -1,4 +1,4 @@
-import { getCountryByTranslation } from "../src";
+import { getCountryByTranslation } from "../dist";
 import { API_BASE_URL } from "../src/constants";
 
 test("fetchs specific country by Translation correctly", async () => {
