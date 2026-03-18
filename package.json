@@ -25,6 +25,7 @@
     "jest": "^30.3.0",
     "prettier": "^3.8.1",
     "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
     "tsdown": "^0.21.4",
     "typescript": "^5.9.3"
   },
@@ -49,12 +50,12 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.mjs",
-      "require": "./dist/types/index.js"
+      "require": "./dist/types/index.cjs"
     }
   },
   "typesVersions": {
