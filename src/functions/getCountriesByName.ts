@@ -31,7 +31,7 @@ import { Country, CountryPicker } from "../types";
  */
 export async function getCountriesByName<T extends readonly (keyof Country)[]>(
   { name, fullText, fields }: { name: string; fullText?: boolean; fields?: T },
-  fetchOptions?: RequestInit
+  fetchOptions?: RequestInit,
 ): Promise<CountryPicker<T>[] | null> {
   try {
     const api = constructAPI({ route: "name", query: name, fields, fullText });

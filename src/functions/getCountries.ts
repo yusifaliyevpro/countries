@@ -30,7 +30,7 @@ import { Country, CountryPicker } from "../types";
  */
 export async function getCountries<T extends readonly (keyof Country)[] & { length: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 }>(
   { independent, fields }: { independent?: boolean; fields: T },
-  fetchOptions?: RequestInit
+  fetchOptions?: RequestInit,
 ): Promise<CountryPicker<T>[] | null> {
   try {
     if (fields.length > 10) console.error("You can specify up to 10 fields only");

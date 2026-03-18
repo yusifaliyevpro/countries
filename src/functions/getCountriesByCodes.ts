@@ -29,7 +29,7 @@ import { Code } from "../types/common";
  */
 export async function getCountriesByCodes<T extends readonly (keyof Country)[]>(
   { codes, fields }: { codes: Code[]; fields?: T },
-  fetchOptions?: RequestInit
+  fetchOptions?: RequestInit,
 ): Promise<CountryPicker<T>[] | null> {
   try {
     const api = constructAPI({ route: "alpha", codes: codes.join(","), fields });

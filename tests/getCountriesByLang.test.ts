@@ -1,4 +1,4 @@
-import { getCountriesByLang } from "../dist";
+import { getCountriesByLang } from "@yusifaliyevpro/countries";
 import { API_BASE_URL } from "../src/constants";
 
 test("fetch specific countries by lang", async () => {

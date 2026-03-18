@@ -30,7 +30,7 @@ import { Country, CountryPicker } from "../types";
  */
 export async function getCountryByTranslation<T extends readonly (keyof Country)[]>(
   { translation, fields }: { translation: string; fields?: T },
-  fetchOptions?: RequestInit
+  fetchOptions?: RequestInit,
 ): Promise<CountryPicker<T> | null> {
   try {
     const api = constructAPI({ route: "translation", query: translation, fields });

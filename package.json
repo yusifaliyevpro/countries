@@ -1,9 +1,9 @@
 {
   "name": "@yusifaliyevpro/countries",
   "description": "TypeScript wrapper for Rest Countries API to fetch country data by codes, capitals, or all countries with full typings.",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "license": "MIT",
-  "type": "commonjs",
+  "type": "module",
   "author": {
     "name": "Yusif Aliyev",
     "email": "yusifaliyevpro@gmail.com",
@@ -16,15 +16,18 @@
   },
   "scripts": {
     "build": "tsdown",
-    "test": "tsdown && jest"
+    "test": "tsdown && jest",
+    "checks": "node scripts/pr-checks.ts"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^22.15.34",
-    "jest": "^30.0.3",
-    "ts-jest": "^29.4.0",
-    "tsdown": "^0.12.9",
-    "typescript": "^5.8.3"
+    "jest": "^30.3.0",
+    "prettier": "^3.8.1",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "tsdown": "^0.21.4",
+    "typescript": "^5.9.3"
   },
   "keywords": [
     "countries",
@@ -47,12 +50,12 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.mjs",
-      "require": "./dist/types/index.js"
+      "require": "./dist/types/index.cjs"
     }
   },
   "typesVersions": {
