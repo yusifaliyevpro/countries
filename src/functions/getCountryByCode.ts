@@ -31,7 +31,7 @@ import { Code } from "../types/common";
  */
 export async function getCountryByCode<T extends readonly (keyof Country)[]>(
   { code, fields }: { code: Code; fields?: T },
-  fetchOptions?: RequestInit
+  fetchOptions?: RequestInit,
 ): Promise<CountryPicker<T> | null> {
   try {
     const api = constructAPI({ route: "alpha", query: code as string, fields });

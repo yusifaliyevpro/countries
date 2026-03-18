@@ -30,7 +30,7 @@ import { Capital, Country, CountryPicker } from "../types";
  */
 export async function getCountryByCapital<T extends readonly (keyof Country)[]>(
   { capital, fields }: { capital: Capital; fields?: T },
-  fetchOptions?: RequestInit
+  fetchOptions?: RequestInit,
 ): Promise<CountryPicker<T> | null> {
   try {
     const api = constructAPI({ route: "capital", query: capital as string, fields });

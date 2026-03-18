@@ -29,7 +29,7 @@ import { Country, CountryPicker, Subregion } from "../types";
  */
 export async function getCountriesBySubregion<T extends readonly (keyof Country)[]>(
   { subregion, fields }: { subregion: Subregion; fields?: T },
-  fetchOptions?: RequestInit
+  fetchOptions?: RequestInit,
 ): Promise<CountryPicker<T>[] | null> {
   try {
     const api = constructAPI({ route: "subregion", query: subregion as string, fields });
