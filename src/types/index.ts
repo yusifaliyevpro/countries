@@ -1,13 +1,13 @@
-import { capitals } from "../data/capitals";
-import { cca2Codes } from "../data/cca2.codes";
-import { cca3Codes } from "../data/cca3.codes";
-import { ccn3Codes } from "../data/ccn3";
-import { ciocCodes } from "../data/cioc";
-import { currencies } from "../data/currencies";
-import { languages, supportedLanguages } from "../data/langs";
-import { regions } from "../data/regions";
-import { subregions } from "../data/subregions";
-import { LiteralUnion } from "./common";
+import type { capitals } from "../data/capitals";
+import type { cca2Codes } from "../data/cca2.codes";
+import type { cca3Codes } from "../data/cca3.codes";
+import type { ccn3Codes } from "../data/ccn3";
+import type { ciocCodes } from "../data/cioc";
+import type { currencies } from "../data/currencies";
+import type { languages, supportedLanguages } from "../data/langs";
+import type { regions } from "../data/regions";
+import type { subregions } from "../data/subregions";
+import type { LiteralUnion } from "./common";
 
 export type CountryPicker<T extends readonly (keyof Country)[]> = Pick<Country, T[number]>;
 

@@ -1,5 +1,5 @@
 import { constructAPI, handleNetworkError, handleNotFoundError } from "../helpers";
-import { Country, CountryPicker } from "../types";
+import type { Country, CountryPicker } from "../types";
 
 /**
  * Fetches all countries, optionally filtered by independence status,

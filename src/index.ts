@@ -1,7 +1,7 @@
-import { Country } from "./types";
+import type { Country } from "./types";
 // import { getCountries } from "./functions/getCountries";
 
-export const defineFields = <T extends (keyof Country)[]>(fields: readonly [...T]) => fields;
+export const defineFields = <T extends (keyof Country)[]>(fields: readonly [...T]): readonly [...T] => fields;
 
 export { getCountries } from "./functions/getCountries";
 export { getCountriesByCodes } from "./functions/getCountriesByCodes";

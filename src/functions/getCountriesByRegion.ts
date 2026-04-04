@@ -1,5 +1,5 @@
 import { constructAPI, handleNetworkError, handleNotFoundError } from "../helpers";
-import { Country, CountryPicker, Region } from "../types";
+import type { Country, CountryPicker, Region } from "../types";
 
 /**
  * Fetches countries which belong to the specified world region,

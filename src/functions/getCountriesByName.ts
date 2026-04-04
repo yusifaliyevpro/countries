@@ -1,5 +1,5 @@
 import { constructAPI, handleNetworkError } from "../helpers";
-import { Country, CountryPicker } from "../types";
+import type { Country, CountryPicker } from "../types";
 
 /**
  * Fetches countries that match a given name or partial name,
