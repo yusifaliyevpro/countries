@@ -1,5 +1,5 @@
 import { constructAPI, handleNetworkError } from "../helpers";
-import { Country, CountryPicker, Lang } from "../types";
+import type { Country, CountryPicker, Lang } from "../types";
 
 /**
  * Fetches countries where the specified language is officially or widely spoken,

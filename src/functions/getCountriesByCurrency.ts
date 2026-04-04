@@ -1,5 +1,5 @@
 import { constructAPI, handleNetworkError } from "../helpers";
-import { Country, CountryPicker, Currency } from "../types";
+import type { Country, CountryPicker, Currency } from "../types";
 
 /**
  * Fetches countries that use the specified currency, optionally including only the specified fields.

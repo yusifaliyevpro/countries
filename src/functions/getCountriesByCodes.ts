@@ -1,6 +1,6 @@
 import { constructAPI, handleNetworkError } from "../helpers";
-import { Country, CountryPicker } from "../types";
-import { Code } from "../types/common";
+import type { Country, CountryPicker } from "../types";
+import type { Code } from "../types/common";
 
 /**
  * Fetches countries by their codes (e.g., CCA2, CCA3, or CIOC), optionally including only the specified fields.

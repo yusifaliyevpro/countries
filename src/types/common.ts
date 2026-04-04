@@ -1,4 +1,4 @@
-import { Cca2Code, Cca3Code, Ccn3Code, CiocCode } from ".";
+import type { Cca2Code, Cca3Code, Ccn3Code, CiocCode } from ".";
 
 export type LiteralUnion<T> = T | (string & {});
 

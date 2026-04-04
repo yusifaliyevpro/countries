@@ -1,5 +1,5 @@
 import { constructAPI, handleNetworkError } from "../helpers";
-import { Country, CountryPicker } from "../types";
+import type { Country, CountryPicker } from "../types";
 
 /**
  * Fetches a single country by its demonym (the name for its residents),

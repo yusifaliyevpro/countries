@@ -1,5 +1,5 @@
 import { constructAPI, handleNetworkError } from "../helpers";
-import { Country, CountryPicker, Subregion } from "../types";
+import type { Country, CountryPicker, Subregion } from "../types";
 
 /**
  * Fetches countries that belong to the specified subregion,

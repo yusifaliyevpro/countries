@@ -1,5 +1,5 @@
 import { constructAPI, handleNetworkError } from "../helpers";
-import { Capital, Country, CountryPicker } from "../types";
+import type { Capital, Country, CountryPicker } from "../types";
 
 /**
  * Fetches a single country by its capital city,
