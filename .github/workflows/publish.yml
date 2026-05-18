@@ -26,7 +26,6 @@ jobs:
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
-          cache: "pnpm"
 
       - name: Update npm
         run: npm install -g npm@latest
@@ -63,9 +62,7 @@ jobs:
 
       - name: Publish
         if: steps.check.outputs.version_changed == 'true'
-        run: npm publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ""
+        run: npm publish --access public
 
       - name: Tag release
         if: steps.check.outputs.version_changed == 'true'
