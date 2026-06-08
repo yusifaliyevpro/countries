@@ -16,8 +16,8 @@
   },
   "scripts": {
     "build": "tsdown",
-    "test": "tsdown && jest",
-    "checks": "node scripts/pr-checks.ts"
+    "check": "node scripts/pr-checks.ts",
+    "test": "tsdown && jest"
   },
   "devDependencies": {
     "@types/jest": "30.0.0",
