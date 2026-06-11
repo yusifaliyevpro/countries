@@ -10,7 +10,7 @@ npm install @yusifaliyevpro/countries
 
 ## Usage
 
-The package uses `latest verison v3.1` of API and exports several utility functions for interacting with the Rest Countries API. All Parameter returns are type-safe. The return type changes if you change `fields` paramater. I suggest to use CCA3 in the functions because it is very precise. For example only 206 out of 250 countries have CIOC code.
+The package uses `latest version v3.1` of API and exports several utility functions for interacting with the Rest Countries API. All Parameter returns are type-safe. The return type changes if you change `fields` parameter. I suggest to use CCA3 in the functions because it is very precise. For example only 206 out of 250 countries have CIOC code.
 
 **`Note:`** If you don't set the fields parameter, all data will be fetched.
 
