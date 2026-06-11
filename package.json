@@ -1,7 +1,7 @@
 {
   "name": "@yusifaliyevpro/countries",
   "description": "TypeScript wrapper for Rest Countries API to fetch country data by codes, capitals, or all countries with full typings.",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,

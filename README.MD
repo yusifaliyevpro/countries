@@ -12,7 +12,7 @@ This package provides an easy and `TYPE-SAFE` way to interact with the [REST Cou
 > - **Pagination.** List methods now return `{ countries, meta }` and accept `limit`/`offset`.
 > - **New capabilities.** Free-text [`search()`](#search) and composable [`filters`](#filtering) (memberships, classification, landlocked, continent…).
 >
-> If you are on v2.x and want the old API surface, pin `@yusifaliyevpro/countries@2`.
+> Migrating from v2.x? See the [field map](#migrating-from-v2x-field-map) for the old→new property translations. If you're not ready to migrate, pin `@yusifaliyevpro/countries@2`.
 
 ## Installation
 
@@ -57,6 +57,65 @@ new RestCountries({
 
 **`Note:`** If you don't set the `fields` parameter, all data will be fetched.
 
+---
+
+## Migrating from v2.x (field map)
+
+v5 restructured the schema. Use this table to translate the `fields` you used to request and the properties you read off each country. Because `fields` selects at **top-level key granularity**, the "Request field" column is what you pass to `fields`; the "Read it as" column is the property path on the returned object.
+
+| v2 field | Request field (v5) | Read it as (v5) | Notes |
+| --- | --- | --- | --- |
+| `name` | `names` | `names.common`, `names.official` | |
+| `name.nativeName` | `names` | `names.native` | keyed by language code |
+| `altSpellings` | `names` | `names.alternates` | |
+| `translations` | `names` | `names.translations` | |
+| `cca2` | `codes` | `codes.alpha_2` | |
+| `cca3` | `codes` | `codes.alpha_3` | |
+| `ccn3` | `codes` | `codes.ccn3` | |
+| `cioc` | `codes` | `codes.cioc` | |
+| `fifa` | `codes` | `codes.fifa` | |
+| `capital` | `capitals` | `capitals[].name` | now objects: `{ name, coordinates, attributes }` |
+| `capitalInfo.latlng` | `capitals` | `capitals[].coordinates` | `{ lat, lng }` |
+| `latlng` | `coordinates` | `coordinates.lat`, `coordinates.lng` | tuple → object |
+| `region` | `region` | `region` | unchanged |
+| `subregion` | `subregion` | `subregion` | unchanged |
+| `continents` | `continents` | `continents` | unchanged |
+| `borders` | `borders` | `borders` | unchanged |
+| `landlocked` | `landlocked` | `landlocked` | unchanged |
+| `area` | `area` | `area.kilometers`, `area.miles` | number → object |
+| `population` | `population` | `population` | unchanged |
+| `timezones` | `timezones` | `timezones` | unchanged |
+| `independent` | `classification` | `classification.sovereign` | closest match; see note below |
+| `unMember` | `classification` | `classification.un_member` | |
+| `status` | `classification` | `classification.iso_status` | e.g. `"official"` |
+| `currencies` | `currencies` | `currencies[]` | `Record` → array of `{ code, name, symbol }` |
+| `languages` | `languages` | `languages[].name` | `Record` → array of language objects |
+| `demonyms` | `demonyms` | `demonyms` | shape unchanged (`{ [lang]: { f, m } }`) |
+| `car.side` | `cars` | `cars.driving_side` | renamed |
+| `car.signs` | `cars` | `cars.signs` | |
+| `tld` | `tlds` | `tlds` | renamed |
+| `idd` | `calling_codes` | `calling_codes` | `{ root, suffixes }` → `string[]` |
+| `flag` (emoji) | `flag` | `flag.emoji` | `flag` is now an object |
+| `flags.png` / `flags.svg` | `flag` | `flag.url_png`, `flag.url_svg` | |
+| `flags.alt` | `flag` | `flag.description` | |
+| `maps.googleMaps` | `links` | `links.google_maps` | |
+| `maps.openStreetMaps` | `links` | `links.open_street_maps` | |
+| `gini` | `economy` | `economy.gini_coefficient` | |
+| `startOfWeek` | `date` | `date.start_of_week` | |
+| `postalCode` | `postal_code` | `postal_code.format`, `postal_code.regex` | renamed |
+
+### ❌ Removed in v5 (no equivalent)
+
+- **`coatOfArms`** — coat-of-arms images are no longer provided by the API.
+
+### 🆕 New in v5
+
+Fields with no v2 counterpart: `memberships` (eu, nato, un, schengen, g7, g20, brics, opec, oecd, …), `classification.dependency` / `disputed` / `un_observer`, `codes.fips` / `gec`, `government_type`, `number_format`, `parent`, `uuid`, `date.academic_year_start` / `fiscal_year_start`, `flag.unicode` / `html_entity`, and `capitals[].attributes`.
+
+> **Note on `independent`:** v5 has no exact `independent` flag. `classification.sovereign` is the closest, but it isn't a 1:1 semantic match — if you relied on the old behaviour, also check `classification.dependency` and `classification.un_member`.
+
+---
+
 ## Methods
 
 Methods that return **lists** resolve to `{ countries, meta } | null` and accept `limit`/`offset`.
@@ -78,6 +137,7 @@ Methods that return a **single** country resolve to `Country | null`.
 
 Additional information:
 
+- [**`Migrating from v2.x (field map)`**](#migrating-from-v2x-field-map)
 - [**`Filtering (CountryFilters)`**](#filtering)
 - [**`Pagination`**](#pagination)
 - [**`Selecting fields (fields / omitFields)`**](#available-fields)
