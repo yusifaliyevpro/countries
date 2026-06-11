@@ -63,46 +63,46 @@ new RestCountries({
 
 v5 restructured the schema. Use this table to translate the `fields` you used to request and the properties you read off each country. Because `fields` selects at **top-level key granularity**, the "Request field" column is what you pass to `fields`; the "Read it as" column is the property path on the returned object.
 
-| v2 field | Request field (v5) | Read it as (v5) | Notes |
-| --- | --- | --- | --- |
-| `name` | `names` | `names.common`, `names.official` | |
-| `name.nativeName` | `names` | `names.native` | keyed by language code |
-| `altSpellings` | `names` | `names.alternates` | |
-| `translations` | `names` | `names.translations` | |
-| `cca2` | `codes` | `codes.alpha_2` | |
-| `cca3` | `codes` | `codes.alpha_3` | |
-| `ccn3` | `codes` | `codes.ccn3` | |
-| `cioc` | `codes` | `codes.cioc` | |
-| `fifa` | `codes` | `codes.fifa` | |
-| `capital` | `capitals` | `capitals[].name` | now objects: `{ name, coordinates, attributes }` |
-| `capitalInfo.latlng` | `capitals` | `capitals[].coordinates` | `{ lat, lng }` |
-| `latlng` | `coordinates` | `coordinates.lat`, `coordinates.lng` | tuple → object |
-| `region` | `region` | `region` | unchanged |
-| `subregion` | `subregion` | `subregion` | unchanged |
-| `continents` | `continents` | `continents` | unchanged |
-| `borders` | `borders` | `borders` | unchanged |
-| `landlocked` | `landlocked` | `landlocked` | unchanged |
-| `area` | `area` | `area.kilometers`, `area.miles` | number → object |
-| `population` | `population` | `population` | unchanged |
-| `timezones` | `timezones` | `timezones` | unchanged |
-| `independent` | `classification` | `classification.sovereign` | closest match; see note below |
-| `unMember` | `classification` | `classification.un_member` | |
-| `status` | `classification` | `classification.iso_status` | e.g. `"official"` |
-| `currencies` | `currencies` | `currencies[]` | `Record` → array of `{ code, name, symbol }` |
-| `languages` | `languages` | `languages[].name` | `Record` → array of language objects |
-| `demonyms` | `demonyms` | `demonyms` | shape unchanged (`{ [lang]: { f, m } }`) |
-| `car.side` | `cars` | `cars.driving_side` | renamed |
-| `car.signs` | `cars` | `cars.signs` | |
-| `tld` | `tlds` | `tlds` | renamed |
-| `idd` | `calling_codes` | `calling_codes` | `{ root, suffixes }` → `string[]` |
-| `flag` (emoji) | `flag` | `flag.emoji` | `flag` is now an object |
-| `flags.png` / `flags.svg` | `flag` | `flag.url_png`, `flag.url_svg` | |
-| `flags.alt` | `flag` | `flag.description` | |
-| `maps.googleMaps` | `links` | `links.google_maps` | |
-| `maps.openStreetMaps` | `links` | `links.open_street_maps` | |
-| `gini` | `economy` | `economy.gini_coefficient` | |
-| `startOfWeek` | `date` | `date.start_of_week` | |
-| `postalCode` | `postal_code` | `postal_code.format`, `postal_code.regex` | renamed |
+| v2 field                  | Request field (v5) | Read it as (v5)                           | Notes                                            |
+| ------------------------- | ------------------ | ----------------------------------------- | ------------------------------------------------ |
+| `name`                    | `names`            | `names.common`, `names.official`          |                                                  |
+| `name.nativeName`         | `names`            | `names.native`                            | keyed by language code                           |
+| `altSpellings`            | `names`            | `names.alternates`                        |                                                  |
+| `translations`            | `names`            | `names.translations`                      |                                                  |
+| `cca2`                    | `codes`            | `codes.alpha_2`                           |                                                  |
+| `cca3`                    | `codes`            | `codes.alpha_3`                           |                                                  |
+| `ccn3`                    | `codes`            | `codes.ccn3`                              |                                                  |
+| `cioc`                    | `codes`            | `codes.cioc`                              |                                                  |
+| `fifa`                    | `codes`            | `codes.fifa`                              |                                                  |
+| `capital`                 | `capitals`         | `capitals[].name`                         | now objects: `{ name, coordinates, attributes }` |
+| `capitalInfo.latlng`      | `capitals`         | `capitals[].coordinates`                  | `{ lat, lng }`                                   |
+| `latlng`                  | `coordinates`      | `coordinates.lat`, `coordinates.lng`      | tuple → object                                   |
+| `region`                  | `region`           | `region`                                  | unchanged                                        |
+| `subregion`               | `subregion`        | `subregion`                               | unchanged                                        |
+| `continents`              | `continents`       | `continents`                              | unchanged                                        |
+| `borders`                 | `borders`          | `borders`                                 | unchanged                                        |
+| `landlocked`              | `landlocked`       | `landlocked`                              | unchanged                                        |
+| `area`                    | `area`             | `area.kilometers`, `area.miles`           | number → object                                  |
+| `population`              | `population`       | `population`                              | unchanged                                        |
+| `timezones`               | `timezones`        | `timezones`                               | unchanged                                        |
+| `independent`             | `classification`   | `classification.sovereign`                | closest match; see note below                    |
+| `unMember`                | `classification`   | `classification.un_member`                |                                                  |
+| `status`                  | `classification`   | `classification.iso_status`               | e.g. `"official"`                                |
+| `currencies`              | `currencies`       | `currencies[]`                            | `Record` → array of `{ code, name, symbol }`     |
+| `languages`               | `languages`        | `languages[].name`                        | `Record` → array of language objects             |
+| `demonyms`                | `demonyms`         | `demonyms`                                | shape unchanged (`{ [lang]: { f, m } }`)         |
+| `car.side`                | `cars`             | `cars.driving_side`                       | renamed                                          |
+| `car.signs`               | `cars`             | `cars.signs`                              |                                                  |
+| `tld`                     | `tlds`             | `tlds`                                    | renamed                                          |
+| `idd`                     | `calling_codes`    | `calling_codes`                           | `{ root, suffixes }` → `string[]`                |
+| `flag` (emoji)            | `flag`             | `flag.emoji`                              | `flag` is now an object                          |
+| `flags.png` / `flags.svg` | `flag`             | `flag.url_png`, `flag.url_svg`            |                                                  |
+| `flags.alt`               | `flag`             | `flag.description`                        |                                                  |
+| `maps.googleMaps`         | `links`            | `links.google_maps`                       |                                                  |
+| `maps.openStreetMaps`     | `links`            | `links.open_street_maps`                  |                                                  |
+| `gini`                    | `economy`          | `economy.gini_coefficient`                |                                                  |
+| `startOfWeek`             | `date`             | `date.start_of_week`                      |                                                  |
+| `postalCode`              | `postal_code`      | `postal_code.format`, `postal_code.regex` | renamed                                          |
 
 ### ❌ Removed in v5 (no equivalent)
 
@@ -121,19 +121,19 @@ Fields with no v2 counterpart: `memberships` (eu, nato, un, schengen, g7, g20, b
 Methods that return **lists** resolve to `{ countries, meta } | null` and accept `limit`/`offset`.
 Methods that return a **single** country resolve to `Country | null`.
 
-| Method | Returns |
-| --- | --- |
-| [`getCountries`](#getcountries) | list |
-| [`search`](#search) | list |
-| [`getCountriesByName`](#getcountriesbyname) | list |
-| [`getCountriesByRegion`](#getcountriesbyregion) | list |
-| [`getCountriesBySubregion`](#getcountriesbysubregion) | list |
-| [`getCountriesByLang`](#getcountriesbylang) | list |
-| [`getCountriesByCurrency`](#getcountriesbycurrency) | list |
-| [`getCountryByCode`](#getcountrybycode) | single |
-| [`getCountryByCapital`](#getcountrybycapital) | single |
-| [`getCountryByTranslation`](#getcountrybytranslation) | single |
-| [`getCountryByDemonym`](#getcountrybydemonym) | single |
+| Method                                                | Returns |
+| ----------------------------------------------------- | ------- |
+| [`getCountries`](#getcountries)                       | list    |
+| [`search`](#search)                                   | list    |
+| [`getCountriesByName`](#getcountriesbyname)           | list    |
+| [`getCountriesByRegion`](#getcountriesbyregion)       | list    |
+| [`getCountriesBySubregion`](#getcountriesbysubregion) | list    |
+| [`getCountriesByLang`](#getcountriesbylang)           | list    |
+| [`getCountriesByCurrency`](#getcountriesbycurrency)   | list    |
+| [`getCountryByCode`](#getcountrybycode)               | single  |
+| [`getCountryByCapital`](#getcountrybycapital)         | single  |
+| [`getCountryByTranslation`](#getcountrybytranslation) | single  |
+| [`getCountryByDemonym`](#getcountrybydemonym)         | single  |
 
 Additional information:
 
@@ -460,7 +460,7 @@ Every method accepts an optional second argument with any valid `fetch` options 
 // Next.js caching example
 const germany = await restCountries.getCountryByCode(
   { code: "DEU", fields: ["names", "capitals"] },
-  { next: { revalidate: 7 * 24 * 3600 }, cache: "force-cache" }
+  { next: { revalidate: 7 * 24 * 3600 }, cache: "force-cache" },
 );
 ```
 
