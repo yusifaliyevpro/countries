@@ -1,20 +1,54 @@
-import { getCountries } from "@yusifaliyevpro/countries";
-import { API_BASE_URL } from "../src/constants";
+import { rc } from "./client";
 
-test("fetchs all countries with specific fields correctly", async () => {
-  const countries = await getCountries({ fields: ["startOfWeek", "area"] });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/all?fields=area,startOfWeek`)).json();
-  expect(countries).toEqual(apiResponse);
+test("fetches a page of countries with selected fields", async () => {
+  const result = await rc.getCountries({ fields: ["names", "area"], limit: 10 });
+  expect(result).not.toBeNull();
+  expect(result!.countries).toHaveLength(10);
+  expect(result!.meta.limit).toBe(10);
+  expect(typeof result!.countries[0].names.common).toBe("string");
+  expect(typeof result!.countries[0].area.kilometers).toBe("number");
 });
 
-test("fetchs only independent countries", async () => {
-  const countries = await getCountries({ independent: false, fields: ["altSpellings", "name", "capital"] });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/independent?status=false&fields=altSpellings,name,capital`)).json();
-  expect(countries).toEqual(apiResponse);
+test("filters by sovereignty via classification", async () => {
+  const result = await rc.getCountries({
+    filters: { classification: { sovereign: true } },
+    fields: ["classification"],
+    limit: 5,
+  });
+  expect(result).not.toBeNull();
+  expect(result!.countries.every((c) => c.classification.sovereign === true)).toBe(true);
 });
 
-test("fetchs only independent countries with specific fields", async () => {
-  const countries = await getCountries({ fields: ["area"], independent: true });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/independent?status=true&fields=area`)).json();
-  expect(countries).toEqual(apiResponse);
+test("AND-combines composable filters", async () => {
+  const result = await rc.getCountries({
+    filters: { region: "Europe", landlocked: true, memberships: { eu: true } },
+    fields: ["names", "region", "landlocked", "memberships"],
+    limit: 100,
+  });
+  expect(result).not.toBeNull();
+  expect(result!.countries.length).toBeGreaterThan(0);
+  expect(result!.countries.every((c) => c.region === "Europe" && c.landlocked && c.memberships.eu)).toBe(true);
+});
+
+test("filters by continent and membership", async () => {
+  const result = await rc.getCountries({
+    filters: { continent: "Europe", memberships: { nato: true } },
+    fields: ["memberships"],
+    limit: 100,
+  });
+  expect(result!.countries.every((c) => c.memberships.nato === true)).toBe(true);
+});
+
+test("omitFields excludes properties from the response", async () => {
+  const result = await rc.getCountries({ omitFields: ["names", "leaders"], limit: 1 });
+  expect(result).not.toBeNull();
+  const country = result!.countries[0] as Record<string, unknown>;
+  expect(country.names).toBeUndefined();
+  expect(country.codes).toBeDefined();
+});
+
+test("honours offset for pagination", async () => {
+  const first = await rc.getCountries({ fields: ["names"], limit: 1, offset: 0 });
+  const second = await rc.getCountries({ fields: ["names"], limit: 1, offset: 1 });
+  expect(first!.countries[0].names.common).not.toBe(second!.countries[0].names.common);
 });

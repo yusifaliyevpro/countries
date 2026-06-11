@@ -1,16 +1,16 @@
 import type { Country } from "./types";
-// import { getCountries } from "./functions/getCountries";
 
+export { RestCountries } from "./client";
+export type { CountryFilters, RestCountriesConfig } from "./client";
+export { countrySchema } from "./types";
+export type { Country, CountryList, CountryPicker, ResponseMeta } from "./types";
+
+/**
+ * Type-safe helper for declaring a `fields` array outside of a call site while
+ * preserving the literal tuple type (so `CountryPicker` can narrow correctly).
+ *
+ * @example
+ * const fields = defineFields(["names", "codes", "capitals"]);
+ * const country = await restCountries.getCountryByCode({ code: "CAN", fields });
+ */
 export const defineFields = <T extends (keyof Country)[]>(fields: readonly [...T]): readonly [...T] => fields;
-
-export { getCountries } from "./functions/getCountries";
-export { getCountriesByCodes } from "./functions/getCountriesByCodes";
-export { getCountriesByCurrency } from "./functions/getCountriesByCurrency";
-export { getCountriesByLang } from "./functions/getCountriesByLang";
-export { getCountriesByName } from "./functions/getCountriesByName";
-export { getCountriesByRegion } from "./functions/getCountriesByRegion";
-export { getCountriesBySubregion } from "./functions/getCountriesBySubregion";
-export { getCountryByCapital } from "./functions/getCountryByCapital";
-export { getCountryByCode } from "./functions/getCountryByCode";
-export { getCountryByDemonym } from "./functions/getCountryByDemonym";
-export { getCountryByTranslation } from "./functions/getCountryByTranslation";

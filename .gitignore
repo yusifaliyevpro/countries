@@ -2,3 +2,5 @@
 /dist
 some.py
 /resources
+.env
+.env.*

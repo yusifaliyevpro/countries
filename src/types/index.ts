@@ -1,3 +1,4 @@
+import * as z from "zod/mini";
 import type { capitals } from "../data/capitals";
 import type { cca2Codes } from "../data/cca2.codes";
 import type { cca3Codes } from "../data/cca3.codes";
@@ -9,7 +10,177 @@ import type { regions } from "../data/regions";
 import type { subregions } from "../data/subregions";
 import type { LiteralUnion } from "./common";
 
+const localizedName = z.strictObject({ common: z.string(), official: z.string() });
+const coordinates = z.strictObject({ lat: z.number(), lng: z.number() });
+const dayMonth = z.strictObject({ day: z.number(), month: z.number() });
+
+/**
+ * Runtime schema for a country as returned by the REST Countries **v5** API,
+ * and the single source of truth for the {@link Country} type (inferred below).
+ *
+ * It uses {@link https://zod.dev/packages/mini | Zod Mini} for a small footprint
+ * and `strictObject` everywhere, so {@link countrySchema}`.parse()` rejects any
+ * property the API adds that isn't modelled here — surfacing schema drift.
+ */
+export const countrySchema = z.strictObject({
+  names: z.strictObject({
+    common: z.string(),
+    official: z.string(),
+    alternates: z.array(z.string()),
+    native: z.record(z.string(), localizedName),
+    translations: z.record(z.string(), localizedName),
+  }),
+  codes: z.strictObject({
+    alpha_2: z.string(),
+    alpha_3: z.string(),
+    ccn3: z.optional(z.string()),
+    cioc: z.optional(z.string()),
+    fifa: z.optional(z.string()),
+    fips: z.optional(z.string()),
+    gec: z.optional(z.string()),
+  }),
+  capitals: z.array(
+    z.strictObject({
+      name: z.string(),
+      coordinates,
+      attributes: z.strictObject({
+        administrative: z.boolean(),
+        constitutional: z.boolean(),
+        executive: z.boolean(),
+        judicial: z.boolean(),
+        legislative: z.boolean(),
+        primary: z.boolean(),
+      }),
+    }),
+  ),
+  flag: z.strictObject({
+    description: z.string(),
+    emoji: z.string(),
+    html_entity: z.string(),
+    unicode: z.string(),
+    url_png: z.string(),
+    url_svg: z.string(),
+  }),
+  region: z.string(),
+  subregion: z.optional(z.string()),
+  area: z.strictObject({ kilometers: z.number(), miles: z.number() }),
+  assets: z.array(z.string()),
+  borders: z.optional(z.array(z.string())),
+  calling_codes: z.array(z.string()),
+  cars: z.strictObject({ driving_side: z.string(), signs: z.array(z.string()) }),
+  classification: z.strictObject({
+    dependency: z.boolean(),
+    dependency_type: z.string(),
+    disputed: z.boolean(),
+    iso_status: z.string(),
+    sovereign: z.boolean(),
+    un_member: z.boolean(),
+    un_observer: z.boolean(),
+  }),
+  continents: z.array(z.string()),
+  coordinates,
+  currencies: z.array(z.strictObject({ code: z.string(), name: z.string(), symbol: z.string() })),
+  date: z.strictObject({
+    academic_year_start: z.optional(dayMonth),
+    fiscal_year_start: z.optional(
+      z.strictObject({
+        corporate: z.optional(z.strictObject({ basis: z.string(), day: z.number(), month: z.number() })),
+        government: z.optional(dayMonth),
+        personal: z.optional(dayMonth),
+      }),
+    ),
+    start_of_week: z.string(),
+  }),
+  demonyms: z.record(z.string(), z.strictObject({ f: z.string(), m: z.string() })),
+  economy: z.optional(z.strictObject({ gini_coefficient: z.record(z.string(), z.number()) })),
+  government_type: z.optional(z.string()),
+  landlocked: z.boolean(),
+  languages: z.array(
+    z.strictObject({
+      bcp47: z.string(),
+      iso639_1: z.string(),
+      iso639_2b: z.string(),
+      iso639_2t: z.string(),
+      iso639_3: z.string(),
+      name: z.string(),
+      native_name: z.string(),
+    }),
+  ),
+  /** Only populated on paid REST Countries plans; otherwise an upgrade notice. */
+  leaders: z.array(z.strictObject({ message: z.string(), sample: z.string() })),
+  links: z.strictObject({
+    google_maps: z.string(),
+    official: z.string(),
+    open_street_maps: z.string(),
+    wikipedia: z.string(),
+  }),
+  memberships: z.strictObject({
+    african_union: z.boolean(),
+    arab_league: z.boolean(),
+    asean: z.boolean(),
+    brics: z.boolean(),
+    commonwealth: z.boolean(),
+    eu: z.boolean(),
+    eurozone: z.boolean(),
+    g20: z.boolean(),
+    g7: z.boolean(),
+    nato: z.boolean(),
+    oecd: z.boolean(),
+    opec: z.boolean(),
+    schengen: z.boolean(),
+    un: z.boolean(),
+  }),
+  number_format: z.strictObject({ decimal_separator: z.string(), thousands_separator: z.string() }),
+  parent: z.strictObject({ alpha_2: z.string(), alpha_3: z.string() }),
+  population: z.number(),
+  postal_code: z.strictObject({ format: z.nullable(z.string()), regex: z.nullable(z.string()) }),
+  timezones: z.array(z.string()),
+  tlds: z.array(z.string()),
+  uuid: z.string(),
+});
+
+/**
+ * A country as returned by the REST Countries **v5** API.
+ *
+ * Inferred from {@link countrySchema} — edit the schema to change this type.
+ *
+ * > **Note:** v5 restructured the entire schema from v2.x of this package
+ * > (e.g. `name` → `names`, `cca2`/`cca3` → `codes.alpha_2`/`codes.alpha_3`,
+ * > `capital: string[]` → `capitals: { name, coordinates, attributes }[]`).
+ */
+export type Country = z.infer<typeof countrySchema>;
+
+/**
+ * Picks the requested top-level fields from {@link Country}.
+ *
+ * The REST Countries v5 `response_fields` parameter selects by property path.
+ * This library types selection at the top-level key granularity, so passing
+ * `["names", "codes"]` yields `Pick<Country, "names" | "codes">`.
+ */
 export type CountryPicker<T extends readonly (keyof Country)[]> = Pick<Country, T[number]>;
+
+/**
+ * Pagination / request metadata returned alongside every list response under
+ * the v5 `data.meta` envelope.
+ */
+export type ResponseMeta = {
+  total: number;
+  count: number;
+  limit: number;
+  offset: number;
+  more: boolean;
+  request_id: string;
+  duration: number;
+};
+
+/**
+ * The shape returned by list endpoints: the selected countries plus the
+ * pagination {@link ResponseMeta}.
+ */
+export type CountryList<T extends readonly (keyof Country)[]> = {
+  countries: CountryPicker<T>[];
+  meta: ResponseMeta;
+};
 
 export type SupportedLanguages = (typeof supportedLanguages)[number];
 export type Cca3Code = LiteralUnion<(typeof cca3Codes)[number]>;
@@ -21,44 +192,3 @@ export type Region = (typeof regions)[number];
 export type Subregion = LiteralUnion<(typeof subregions)[number]>;
 export type Lang = LiteralUnion<(typeof languages)[number]>;
 export type Currency = LiteralUnion<(typeof currencies)[number]>;
-
-type TranslationValue = { official: string; common: string };
-type Translations = Partial<Record<SupportedLanguages, TranslationValue>> & Record<string, TranslationValue>;
-
-export type Country = {
-  name: { common: string; official: string; nativeName?: Record<string, { official: string; common: string }> };
-  tld?: string[];
-  cca2: string;
-  ccn3?: string;
-  cca3: string;
-  cioc?: string;
-  independent: boolean;
-  status: string;
-  unMember: boolean;
-  currencies?: Record<string, { name: string; symbol: string }>;
-  idd: { root: string; suffixes: string[] } | Record<string, never>;
-  capital?: string[];
-  altSpellings: string[];
-  region: string;
-  subregion?: string;
-  languages?: Record<string, string>;
-  translations: Translations;
-  latlng: [number, number];
-  landlocked: boolean;
-  borders?: string[];
-  area: number;
-  demonyms: Record<string, { f: string; m: string }>;
-  flag: string;
-  maps: { googleMaps: string; openStreetMaps: string };
-  population: number;
-  gini?: { [year: string]: number };
-  fifa?: string;
-  car: { signs?: string[]; side: string };
-  timezones: string[];
-  continents: string[];
-  flags: { png: string; svg: string; alt?: string };
-  coatOfArms: { png: string; svg: string; alt?: string } | Record<string, never>;
-  startOfWeek: string;
-  capitalInfo: { latlng: [number, number] | [] } | Record<string, never>;
-  postalCode: { format: string | null; regex: string | null };
-};

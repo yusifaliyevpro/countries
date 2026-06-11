@@ -1,19 +1,22 @@
-import { getCountryByCode } from "@yusifaliyevpro/countries";
-import { API_BASE_URL } from "../src/constants";
+import { rc } from "./client";
 
-test("fetch specific country by Code", async () => {
-  const country = await getCountryByCode({ code: "aze" });
-  const apiResponse = (await (await fetch(`${API_BASE_URL}/alpha/aze`)).json())[0];
-  expect(country).toEqual(apiResponse);
+test("fetches a country by alpha-3 code", async () => {
+  const country = await rc.getCountryByCode({ code: "AZE", fields: ["names", "codes"] });
+  expect(country?.names.common).toBe("Azerbaijan");
+  expect(country?.codes.alpha_3).toBe("AZE");
 });
 
-test("fetch specific fields of country by Code", async () => {
-  const country = await getCountryByCode({ code: "az", fields: ["car", "capital", "latlng"] });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/alpha/az?fields=car,capital,latlng`)).json();
-  expect(country).toEqual(apiResponse);
+test("fetches a country by alpha-2 code", async () => {
+  const country = await rc.getCountryByCode({ code: "AZ", fields: ["codes"] });
+  expect(country?.codes.alpha_2).toBe("AZ");
 });
 
-test("should return null", async () => {
-  const country = await getCountryByCode({ code: "aaaabccc", fields: ["car", "capital", "latlng"] });
-  expect(country).toEqual(null);
+test("resolves a CIOC code via fallback", async () => {
+  const country = await rc.getCountryByCode({ code: "SUI", fields: ["names", "codes"] });
+  expect(country?.names.common).toBe("Switzerland");
+});
+
+test("returns null for an unknown code", async () => {
+  const country = await rc.getCountryByCode({ code: "ZZZ", fields: ["names"] });
+  expect(country).toBeNull();
 });

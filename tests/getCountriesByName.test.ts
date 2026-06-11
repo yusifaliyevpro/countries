@@ -1,19 +1,18 @@
-import { getCountriesByName } from "@yusifaliyevpro/countries";
-import { API_BASE_URL } from "../src/constants";
+import { rc } from "./client";
 
-test("fetchs specific countries by Name correctly", async () => {
-  const countries = await getCountriesByName({ name: "deutschland" });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/name/deutschland`)).json();
-  expect(countries).toEqual(apiResponse);
+test("fetches countries by partial name", async () => {
+  const result = await rc.getCountriesByName({ name: "united", fields: ["names"], limit: 100 });
+  expect(result).not.toBeNull();
+  expect(result!.countries.some((c) => c.names.common === "United Arab Emirates")).toBe(true);
 });
 
-test("fetchs specific countries with specific fields bu Name correctly", async () => {
-  const countries = await getCountriesByName({ name: "aruba", fullText: true, fields: ["startOfWeek", "area"] });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/name/aruba?fields=area,startOfWeek&fullText=true`)).json();
-  expect(countries).toEqual(apiResponse);
+test("fetches a country by full-text name match", async () => {
+  const result = await rc.getCountriesByName({ name: "Finland", fullText: true, fields: ["names"] });
+  expect(result!.countries).toHaveLength(1);
+  expect(result!.countries[0].names.common).toBe("Finland");
 });
 
-test("should return null", async () => {
-  const countries = await getCountriesByName({ name: "akskaks", fullText: true, fields: ["startOfWeek", "area"] });
-  expect(countries).toEqual(null);
+test("returns an empty page for an unknown name", async () => {
+  const result = await rc.getCountriesByName({ name: "akskaks", fields: ["names"] });
+  expect(result?.countries ?? []).toHaveLength(0);
 });
