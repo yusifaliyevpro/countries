@@ -20,4 +20,6 @@ jobs:
           version: latest
       - run: pnpm install
       - run: pnpm test
+        env:
+          REST_COUNTRIES_API_KEY: ${{ secrets.REST_COUNTRIES_API_KEY }}
       - run: pnpm tsc --noEmit
