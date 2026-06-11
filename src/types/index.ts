@@ -15,6 +15,14 @@ const coordinates = z.strictObject({ lat: z.number(), lng: z.number() });
 const dayMonth = z.strictObject({ day: z.number(), month: z.number() });
 
 /**
+ * The v5 API serialises an **empty** map as `[]` (an empty array) instead of
+ * `{}`. So every map-valued field is modelled as `Record<…> | []` to stay
+ * faithful to the raw response — guard with `Array.isArray(value)` before use.
+ */
+const emptyMap = z.array(z.never());
+const mapOrEmpty = <V extends z.ZodMiniType>(value: V) => z.union([z.record(z.string(), value), emptyMap]);
+
+/**
  * Runtime schema for a country as returned by the REST Countries **v5** API,
  * and the single source of truth for the {@link Country} type (inferred below).
  *
@@ -27,8 +35,8 @@ export const countrySchema = z.strictObject({
     common: z.string(),
     official: z.string(),
     alternates: z.array(z.string()),
-    native: z.record(z.string(), localizedName),
-    translations: z.record(z.string(), localizedName),
+    native: mapOrEmpty(localizedName),
+    translations: mapOrEmpty(localizedName),
   }),
   codes: z.strictObject({
     alpha_2: z.string(),
@@ -79,7 +87,12 @@ export const countrySchema = z.strictObject({
   }),
   continents: z.array(z.string()),
   coordinates,
-  currencies: z.array(z.strictObject({ code: z.string(), name: z.string(), symbol: z.string() })),
+  // Usually an array of `{ code, name, symbol }`. A few entities (e.g. Somaliland)
+  // still return the old v4 record shape `{ [code]: { name, symbol } }`.
+  currencies: z.union([
+    z.array(z.strictObject({ code: z.string(), name: z.string(), symbol: z.string() })),
+    z.record(z.string(), z.strictObject({ name: z.string(), symbol: z.string() })),
+  ]),
   date: z.strictObject({
     academic_year_start: z.optional(dayMonth),
     fiscal_year_start: z.optional(
@@ -91,8 +104,8 @@ export const countrySchema = z.strictObject({
     ),
     start_of_week: z.string(),
   }),
-  demonyms: z.record(z.string(), z.strictObject({ f: z.string(), m: z.string() })),
-  economy: z.optional(z.strictObject({ gini_coefficient: z.record(z.string(), z.number()) })),
+  demonyms: mapOrEmpty(z.strictObject({ f: z.string(), m: z.string() })),
+  economy: z.optional(z.strictObject({ gini_coefficient: mapOrEmpty(z.number()) })),
   government_type: z.optional(z.string()),
   landlocked: z.boolean(),
   languages: z.array(
