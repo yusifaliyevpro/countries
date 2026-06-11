@@ -1,19 +1,12 @@
-import { getCountryByCapital } from "@yusifaliyevpro/countries";
-import { API_BASE_URL } from "../src/constants";
+import { rc } from "./client";
 
-test("fetch specific country by Capital", async () => {
-  const country = await getCountryByCapital({ capital: "Baku" });
-  const apiResponse = (await (await fetch(`${API_BASE_URL}/capital/baku`)).json())[0];
-  expect(country).toEqual(apiResponse);
+test("fetches a country by capital", async () => {
+  const country = await rc.getCountryByCapital({ capital: "Baku", fields: ["names", "capitals"] });
+  expect(country?.names.common).toBe("Azerbaijan");
+  expect(country?.capitals.some((cap) => cap.name === "Baku")).toBe(true);
 });
 
-test("fetch specific fields of country by Capital", async () => {
-  const country = await getCountryByCapital({ capital: "Baku", fields: ["car", "capital", "latlng"] });
-  const apiResponse = (await (await fetch(`${API_BASE_URL}/capital/baku?fields=car,capital,latlng`)).json())[0];
-  expect(country).toEqual(apiResponse);
-});
-
-test("should return null", async () => {
-  const country = await getCountryByCapital({ capital: "ksdsdmkoasl", fields: ["car", "capital", "latlng"] });
-  expect(country).toEqual(null);
+test("returns null for an unknown capital", async () => {
+  const country = await rc.getCountryByCapital({ capital: "ksdsdmkoasl", fields: ["names"] });
+  expect(country).toBeNull();
 });

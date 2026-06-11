@@ -1,19 +1,16 @@
-import { getCountriesBySubregion } from "@yusifaliyevpro/countries";
-import { API_BASE_URL } from "../src/constants";
+import { rc } from "./client";
 
-test("fetchs specific countries by Subregion correctly", async () => {
-  const countries = await getCountriesBySubregion({ subregion: "Australia and New Zealand" });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/subregion/Australia and New Zealand`)).json();
-  expect(countries).toEqual(apiResponse);
+test("fetches countries by subregion", async () => {
+  const result = await rc.getCountriesBySubregion({
+    subregion: "Northern Europe",
+    fields: ["names", "subregion"],
+    limit: 100,
+  });
+  expect(result).not.toBeNull();
+  expect(result!.countries.every((c) => c.subregion === "Northern Europe")).toBe(true);
 });
 
-test("fetchs specific countries with specific fields bu Subregion correctly", async () => {
-  const countries = await getCountriesBySubregion({ subregion: "Central Europe", fields: ["startOfWeek", "area"] });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/subregion/Central Europe?fields=area,startOfWeek`)).json();
-  expect(countries).toEqual(apiResponse);
-});
-
-test("should return null", async () => {
-  const countries = await getCountriesBySubregion({ subregion: "aaaaaaabbb", fields: ["startOfWeek", "area"] });
-  expect(countries).toEqual(null);
+test("returns an empty page for an unknown subregion", async () => {
+  const result = await rc.getCountriesBySubregion({ subregion: "aaaaaaabbb", fields: ["names"] });
+  expect(result?.countries ?? []).toHaveLength(0);
 });

@@ -1,19 +1,11 @@
-import { getCountryByTranslation } from "@yusifaliyevpro/countries";
-import { API_BASE_URL } from "../src/constants";
+import { rc } from "./client";
 
-test("fetchs specific country by Translation correctly", async () => {
-  const country = await getCountryByTranslation({ translation: "alemania" });
-  const apiResponse = (await (await fetch(`${API_BASE_URL}/translation/alemania`)).json())[0];
-  expect(country).toEqual(apiResponse);
+test("fetches a country by translated name", async () => {
+  const country = await rc.getCountryByTranslation({ translation: "Deutschland", fields: ["names"] });
+  expect(country?.names.common).toBe("Germany");
 });
 
-test("fetchs specific country with specific fields bu Translation correctly", async () => {
-  const country = await getCountryByTranslation({ translation: "Saksamaa", fields: ["startOfWeek", "area"] });
-  const apiResponse = (await (await fetch(`${API_BASE_URL}/translation/Saksamaa?fields=area,startOfWeek`)).json())[0];
-  expect(country).toEqual(apiResponse);
-});
-
-test("should return null", async () => {
-  const country = await getCountryByTranslation({ translation: "aaabccc", fields: ["startOfWeek", "area"] });
-  expect(country).toEqual(null);
+test("returns null for an unknown translation", async () => {
+  const country = await rc.getCountryByTranslation({ translation: "aaabccc", fields: ["names"] });
+  expect(country).toBeNull();
 });

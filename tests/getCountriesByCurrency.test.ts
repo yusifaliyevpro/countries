@@ -1,19 +1,13 @@
-import { getCountriesByCurrency } from "@yusifaliyevpro/countries";
-import { API_BASE_URL } from "../src/constants";
+import { rc } from "./client";
 
-test("fetch specific countries by currency", async () => {
-  const countries = await getCountriesByCurrency({ currency: "Euro" });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/currency/euro`)).json();
-  expect(countries).toEqual(apiResponse);
+test("fetches countries by currency code", async () => {
+  const result = await rc.getCountriesByCurrency({ currency: "EUR", fields: ["names", "currencies"], limit: 100 });
+  expect(result).not.toBeNull();
+  expect(result!.countries.length).toBeGreaterThan(0);
+  expect(result!.countries.some((c) => c.names.common === "Germany")).toBe(true);
 });
 
-test("fetch specific fields of countries by currency", async () => {
-  const countries = await getCountriesByCurrency({ currency: "Euro", fields: ["car", "capital", "latlng"] });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/currency/euro?fields=car,capital,latlng`)).json();
-  expect(countries).toEqual(apiResponse);
-});
-
-test("should return null", async () => {
-  const countries = await getCountriesByCurrency({ currency: "kskdskdkk", fields: ["car", "capital", "latlng"] });
-  expect(countries).toEqual(null);
+test("returns an empty page for an unknown currency", async () => {
+  const result = await rc.getCountriesByCurrency({ currency: "ZZZ", fields: ["names"] });
+  expect(result?.countries ?? []).toHaveLength(0);
 });

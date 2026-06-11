@@ -1,14 +1,13 @@
-import { getCountriesByRegion } from "@yusifaliyevpro/countries";
-import { API_BASE_URL } from "../src/constants";
+import { rc } from "./client";
 
-test("fetchs specific countries by Region correctly", async () => {
-  const countries = await getCountriesByRegion({ region: "Asia" });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/region/Asia`)).json();
-  expect(countries).toEqual(apiResponse);
+test("fetches countries by region", async () => {
+  const result = await rc.getCountriesByRegion({ region: "Asia", fields: ["names", "region"], limit: 100 });
+  expect(result).not.toBeNull();
+  expect(result!.countries.every((c) => c.region === "Asia")).toBe(true);
+  expect(result!.countries.some((c) => c.names.common === "Japan")).toBe(true);
 });
 
-test("fetchs specific countries with specific fields bu Region correctly", async () => {
-  const countries = await getCountriesByRegion({ region: "Americas", fields: ["startOfWeek", "area"] });
-  const apiResponse = await (await fetch(`${API_BASE_URL}/region/Americas?fields=area,startOfWeek`)).json();
-  expect(countries).toEqual(apiResponse);
+test("returns an empty page for an unknown region", async () => {
+  const result = await rc.getCountriesByRegion({ region: "Atlantis" as never, fields: ["names"] });
+  expect(result?.countries ?? []).toHaveLength(0);
 });

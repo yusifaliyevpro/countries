@@ -35,6 +35,8 @@ jobs:
 
       - name: Test
         run: pnpm test
+        env:
+          REST_COUNTRIES_API_KEY: ${{ secrets.REST_COUNTRIES_API_KEY }}
 
       - name: Check the version
         id: check
