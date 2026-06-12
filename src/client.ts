@@ -121,8 +121,11 @@ export class RestCountries {
   readonly #fetch: typeof fetch;
 
   constructor(config: RestCountriesConfig) {
-    if (!config?.apiKey) throw new Error("RestCountries: `apiKey` is required. Get one at https://restcountries.com/sign-up");
-    this.#apiKey = config.apiKey;
+    const apiKey = config?.apiKey?.trim();
+    if (!apiKey) {
+      throw new Error("RestCountries: `apiKey` is required and cannot be empty. Get one at https://restcountries.com/sign-up");
+    }
+    this.#apiKey = apiKey;
     this.#baseURL = config.baseURL ?? API_BASE_URL;
     this.#fetch = config.fetch ?? globalThis.fetch;
   }

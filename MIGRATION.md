@@ -14,6 +14,28 @@ Because the v1–v4 endpoints are gone, **staying on v2.x of this package is no 
 
 See the [README](README.MD) for the full API reference.
 
+## Recommended setup: one shared client
+
+Instead of importing standalone functions everywhere (the v2.x style), create the client **once** in a dedicated file and reuse that instance across your app. This keeps the API key in a single place and avoids constructing a client per call:
+
+```ts
+// src/lib/countries.ts
+import { RestCountries } from "@yusifaliyevpro/countries";
+
+export const restCountries = new RestCountries({
+  apiKey: process.env.REST_COUNTRIES_API_KEY!,
+});
+```
+
+```ts
+// anywhere else
+import { restCountries } from "@/lib/countries";
+
+const { success, country, error } = await restCountries.getCountryByCode({ alpha_3: "CAN" });
+```
+
+> Keep the API key in an environment variable and never commit it. The constructor throws if the key is missing or empty.
+
 ## Return shape: `{ success, … , error }` instead of `null`
 
 In v2.x, methods returned the data or `null`, so you had to null-check before using anything. v5 returns a **discriminated result** — narrow on `success` once and the data is fully typed (no `undefined`), and on failure you get the `Error`:
