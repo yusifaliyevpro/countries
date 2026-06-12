@@ -75,7 +75,7 @@ export const countrySchema = z.strictObject({
   assets: z.array(z.string()),
   borders: z.optional(z.array(z.string())),
   calling_codes: z.array(z.string()),
-  cars: z.strictObject({ driving_side: z.string(), signs: z.array(z.string()) }),
+  cars: z.strictObject({ driving_side: z.literal(["left", "right"]), signs: z.array(z.string()) }),
   classification: z.strictObject({
     dependency: z.boolean(),
     dependency_type: z.string(),

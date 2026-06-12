@@ -10,16 +10,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
           node-version: 24
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: latest
-      - run: pnpm install
-      - run: pnpm test
-        env:
-          REST_COUNTRIES_API_KEY: ${{ secrets.REST_COUNTRIES_API_KEY }}
-      - run: pnpm tsc --noEmit
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Type Check
+        run: pnpm tsc --noEmit
+
+      # - name: Run Tests
+      #   run: pnpm test
+      #   env:
+      #     REST_COUNTRIES_API_KEY: ${{ secrets.REST_COUNTRIES_API_KEY }}

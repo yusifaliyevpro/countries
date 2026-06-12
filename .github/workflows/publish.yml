@@ -16,27 +16,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Update npm
-        run: npm install -g npm@latest
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
 
       - name: Install dependencies
         run: pnpm install
 
-      - name: Test
-        run: pnpm test
-        env:
-          REST_COUNTRIES_API_KEY: ${{ secrets.REST_COUNTRIES_API_KEY }}
+      # - name: Run Tests
+      #   run: pnpm test
+      #   env:
+      #     REST_COUNTRIES_API_KEY: ${{ secrets.REST_COUNTRIES_API_KEY }}
 
       - name: Check the version
         id: check

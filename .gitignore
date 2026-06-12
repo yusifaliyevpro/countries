@@ -4,3 +4,4 @@ some.py
 /resources
 .env
 .env.*
+tests/.cache/

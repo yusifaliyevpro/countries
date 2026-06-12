@@ -1,7 +1,7 @@
 {
   "name": "@yusifaliyevpro/countries",
   "description": "TypeScript wrapper for Rest Countries API to fetch country data by codes, capitals, or all countries with full typings.",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsdown",
     "check": "node scripts/pr-checks.ts",
-    "test": "tsdown && jest"
+    "test": "tsdown && jest",
+    "test:schema": "tsdown && jest tests/schema.test.ts"
   },
   "devDependencies": {
     "@types/jest": "30.0.0",
