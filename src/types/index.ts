@@ -197,13 +197,32 @@ export type ResponseMeta = {
 };
 
 /**
- * The shape returned by list endpoints: the selected countries plus the
- * pagination {@link ResponseMeta}.
+ * Discriminated result returned by **list** endpoints. Destructure all four
+ * keys and narrow on `success` — TypeScript drops the `undefined`s from
+ * `countries`/`meta` once you've checked it:
+ *
+ * @example
+ * const { success, countries, meta, error } = await restCountries.getCountriesByRegion({ region: "Europe" });
+ * if (!success) throw error; // `error` is Error here
+ * countries; // CountryPicker<T>[]  (no undefined)
+ * meta;      // ResponseMeta
  */
-export type CountryList<T extends readonly (keyof Country)[]> = {
-  countries: CountryPicker<T>[];
-  meta: ResponseMeta;
-};
+export type CountryListResult<T extends readonly (keyof Country)[]> =
+  | { success: true; countries: CountryPicker<T>[]; meta: ResponseMeta; error: undefined }
+  | { success: false; countries: undefined; meta: undefined; error: Error };
+
+/**
+ * Discriminated result returned by **single-country** endpoints (including the
+ * not-found case as `success: false`).
+ *
+ * @example
+ * const { success, country, error } = await restCountries.getCountryByCode({ code: "CAN" });
+ * if (!success) throw error;
+ * country; // CountryPicker<T>  (no undefined)
+ */
+export type CountryResult<T extends readonly (keyof Country)[]> =
+  | { success: true; country: CountryPicker<T>; error: undefined }
+  | { success: false; country: undefined; error: Error };
 
 export type SupportedLanguages = (typeof supportedLanguages)[number];
 export type Cca3Code = LiteralUnion<(typeof cca3Codes)[number]>;

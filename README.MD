@@ -2,22 +2,16 @@
 
 This package provides an easy and `TYPE-SAFE` way to interact with the [REST Countries API](https://restcountries.com/), which offers detailed information about countries worldwide. You can fetch country data using various parameters like alpha-2/alpha-3/CIOC/CCN3 codes, capital cities, languages, regions, subregions, translations, demonyms and currencies. `Thanks to Alejandro Matos for this API.`
 
-> ## ⚠️ v5 — Breaking changes (REST Countries v5)
->
-> REST Countries shut down v1–v4 and now only serves **v5**, which **requires an API key** and **completely restructured the response schema**. This package's v5 is a ground-up rewrite to match (the major version now tracks the API version):
->
-> - **API key is now required.** [Sign up here](https://restcountries.com/sign-up) to get one.
-> - **New class-based API.** Instead of importing standalone functions, you create one `RestCountries` instance with your key and call methods on it.
-> - **New data shape.** e.g. `name` → `names`, `cca2`/`cca3` → `codes.alpha_2`/`codes.alpha_3`, `capital: string[]` → `capitals: { name, coordinates, attributes }[]`. See [Available Fields](#available-fields).
-> - **Pagination.** List methods now return `{ countries, meta }` and accept `limit`/`offset`.
-> - **New capabilities.** Free-text [`search()`](#search) and composable [`filters`](#filtering) (memberships, classification, landlocked, continent…).
->
-> Migrating from v2.x? See the [field map](#migrating-from-v2x-field-map) for the old→new property translations. If you're not ready to migrate, pin `@yusifaliyevpro/countries@2`.
+> ⚠️ **You are reading the v5 documentation.** v5 is a breaking, ground-up rewrite for REST Countries v5 (which shut down v1–v4). It now **requires an API key** and has a **new schema, class API, and pagination**. Coming from v2.x? Read the **[Migration guide](MIGRATION.md)**.
 
 ## Installation
 
 ```bash
 npm install @yusifaliyevpro/countries
+# or
+pnpm add @yusifaliyevpro/countries
+# or
+yarn add @yusifaliyevpro/countries
 ```
 
 ## Getting started
@@ -30,17 +24,21 @@ import { RestCountries } from "@yusifaliyevpro/countries";
 const restCountries = new RestCountries({ apiKey: process.env.REST_COUNTRIES_API_KEY! });
 
 // Fetch a single country
-const canada = await restCountries.getCountryByCode({
-  code: "CAN",
+const { success, country, error } = await restCountries.getCountryByCode({
+  alpha_3: "CAN",
   fields: ["names", "capitals", "flag"],
 });
+if (!success) throw error; // `error` is an Error here
+console.log(country.names.common); // `country` is fully typed — no null checks
 
 // Fetch a paginated list
-const { countries, meta } = await restCountries.getCountriesByRegion({
+const result = await restCountries.getCountriesByRegion({
   region: "Europe",
   fields: ["names", "population"],
   limit: 10,
 });
+if (!result.success) throw result.error;
+console.log(result.countries, result.meta);
 ```
 
 > **Keep your API key secret.** Load it from an environment variable (e.g. `.env`) — never commit it.
@@ -57,69 +55,30 @@ new RestCountries({
 
 **`Note:`** If you don't set the `fields` parameter, all data will be fetched.
 
----
-
-## Migrating from v2.x (field map)
-
-v5 restructured the schema. Use this table to translate the `fields` you used to request and the properties you read off each country. Because `fields` selects at **top-level key granularity**, the "Request field" column is what you pass to `fields`; the "Read it as" column is the property path on the returned object.
-
-| v2 field                  | Request field (v5) | Read it as (v5)                           | Notes                                            |
-| ------------------------- | ------------------ | ----------------------------------------- | ------------------------------------------------ |
-| `name`                    | `names`            | `names.common`, `names.official`          |                                                  |
-| `name.nativeName`         | `names`            | `names.native`                            | keyed by language code                           |
-| `altSpellings`            | `names`            | `names.alternates`                        |                                                  |
-| `translations`            | `names`            | `names.translations`                      |                                                  |
-| `cca2`                    | `codes`            | `codes.alpha_2`                           |                                                  |
-| `cca3`                    | `codes`            | `codes.alpha_3`                           |                                                  |
-| `ccn3`                    | `codes`            | `codes.ccn3`                              |                                                  |
-| `cioc`                    | `codes`            | `codes.cioc`                              |                                                  |
-| `fifa`                    | `codes`            | `codes.fifa`                              |                                                  |
-| `capital`                 | `capitals`         | `capitals[].name`                         | now objects: `{ name, coordinates, attributes }` |
-| `capitalInfo.latlng`      | `capitals`         | `capitals[].coordinates`                  | `{ lat, lng }`                                   |
-| `latlng`                  | `coordinates`      | `coordinates.lat`, `coordinates.lng`      | tuple → object                                   |
-| `region`                  | `region`           | `region`                                  | unchanged                                        |
-| `subregion`               | `subregion`        | `subregion`                               | unchanged                                        |
-| `continents`              | `continents`       | `continents`                              | unchanged                                        |
-| `borders`                 | `borders`          | `borders`                                 | unchanged                                        |
-| `landlocked`              | `landlocked`       | `landlocked`                              | unchanged                                        |
-| `area`                    | `area`             | `area.kilometers`, `area.miles`           | number → object                                  |
-| `population`              | `population`       | `population`                              | unchanged                                        |
-| `timezones`               | `timezones`        | `timezones`                               | unchanged                                        |
-| `independent`             | `classification`   | `classification.sovereign`                | closest match; see note below                    |
-| `unMember`                | `classification`   | `classification.un_member`                |                                                  |
-| `status`                  | `classification`   | `classification.iso_status`               | e.g. `"official"`                                |
-| `currencies`              | `currencies`       | `currencies[]`                            | `Record` → array of `{ code, name, symbol }`     |
-| `languages`               | `languages`        | `languages[].name`                        | `Record` → array of language objects             |
-| `demonyms`                | `demonyms`         | `demonyms`                                | shape unchanged (`{ [lang]: { f, m } }`)         |
-| `car.side`                | `cars`             | `cars.driving_side`                       | renamed                                          |
-| `car.signs`               | `cars`             | `cars.signs`                              |                                                  |
-| `tld`                     | `tlds`             | `tlds`                                    | renamed                                          |
-| `idd`                     | `calling_codes`    | `calling_codes`                           | `{ root, suffixes }` → `string[]`                |
-| `flag` (emoji)            | `flag`             | `flag.emoji`                              | `flag` is now an object                          |
-| `flags.png` / `flags.svg` | `flag`             | `flag.url_png`, `flag.url_svg`            |                                                  |
-| `flags.alt`               | `flag`             | `flag.description`                        |                                                  |
-| `maps.googleMaps`         | `links`            | `links.google_maps`                       |                                                  |
-| `maps.openStreetMaps`     | `links`            | `links.open_street_maps`                  |                                                  |
-| `gini`                    | `economy`          | `economy.gini_coefficient`                |                                                  |
-| `startOfWeek`             | `date`             | `date.start_of_week`                      |                                                  |
-| `postalCode`              | `postal_code`      | `postal_code.format`, `postal_code.regex` | renamed                                          |
-
-### ❌ Removed in v5 (no equivalent)
-
-- **`coatOfArms`** — coat-of-arms images are no longer provided by the API.
-
-### 🆕 New in v5
-
-Fields with no v2 counterpart: `memberships` (eu, nato, un, schengen, g7, g20, brics, opec, oecd, …), `classification.dependency` / `disputed` / `un_observer`, `codes.fips` / `gec`, `government_type`, `number_format`, `parent`, `uuid`, `date.academic_year_start` / `fiscal_year_start`, `flag.unicode` / `html_entity`, and `capitals[].attributes`.
-
-> **Note on `independent`:** v5 has no exact `independent` flag. `classification.sovereign` is the closest, but it isn't a 1:1 semantic match — if you relied on the old behaviour, also check `classification.dependency` and `classification.un_member`.
-
----
+> 📦 **Migrating from v2.x?** The full field-by-field map (old → new) lives in **[MIGRATION.md](MIGRATION.md)**.
 
 ## Methods
 
-Methods that return **lists** resolve to `{ countries, meta } | null` and accept `limit`/`offset`.
-Methods that return a **single** country resolve to `Country | null`.
+Every method resolves to a **discriminated result** — never `null`. Destructure all the keys and narrow on `success`; TypeScript then drops `undefined` from the data, so you don't write any null checks:
+
+```typescript
+// List endpoints → { success, countries, meta, error }
+const { success, countries, meta, error } = await restCountries.getCountriesByLang({
+  lang: "Spanish",
+  fields: ["names", "languages"],
+  limit: 100,
+});
+if (!success) throw error; // narrow once…
+countries; // …now CountryPicker<T>[]  (not undefined)
+meta; // ResponseMeta
+
+// Single endpoints → { success, country, error }
+const res = await restCountries.getCountryByCode({ alpha_3: "CAN" });
+if (!res.success) throw res.error;
+res.country; // CountryPicker<T>
+```
+
+On failure (network error, auth failure, or not-found) you get `{ success: false, error: Error, … }` — the method never throws and never returns `null`. List endpoints accept `limit`/`offset` ([Pagination](#pagination)).
 
 | Method                                                | Returns |
 | ----------------------------------------------------- | ------- |
@@ -137,7 +96,7 @@ Methods that return a **single** country resolve to `Country | null`.
 
 Additional information:
 
-- [**`Migrating from v2.x (field map)`**](#migrating-from-v2x-field-map)
+- [**`Migrating from v2.x`**](MIGRATION.md)
 - [**`Filtering (CountryFilters)`**](#filtering)
 - [**`Pagination`**](#pagination)
 - [**`Selecting fields (fields / omitFields)`**](#available-fields)
@@ -325,22 +284,25 @@ const { countries } = await restCountries.getCountriesByCurrency({
 
 ### `getCountryByCode`
 
-Fetches a single country by its code. Detects the code type (alpha-2, alpha-3, CCN3) and falls back to CIOC for three-letter codes.
+Fetches a single country by **one** code, identified by its kind. Pass **exactly one** of `alpha_2`, `alpha_3`, `ccn3`, or `cioc` — passing none or more than one is a compile-time error.
 
 #### Parameters:
 
-- `code`: An alpha-3, alpha-2, CCN3 or CIOC code (case-insensitive) (autocomplete).
-- `fields` (optional): Array of fields to retrieve.
+- one of `alpha_2` / `alpha_3` / `ccn3` / `cioc`: the code value (autocomplete per type).
+- `fields` / `omitFields` (optional): field selection.
 
 #### Example:
 
 ```typescript
-const azerbaijan = await restCountries.getCountryByCode({ code: "AZE" });
+const { success, country: azerbaijan } = await restCountries.getCountryByCode({ alpha_3: "AZE" });
 
-const switzerland = await restCountries.getCountryByCode({
-  code: "SUI", // CIOC code — resolved via fallback
+const { country: switzerland } = await restCountries.getCountryByCode({
+  cioc: "SUI", // IOC code (differs from alpha-3 "CHE")
   fields: ["names", "codes", "population"],
 });
+
+// @ts-expect-error — can't pass two codes
+restCountries.getCountryByCode({ alpha_2: "US", alpha_3: "USA" });
 ```
 
 ---
@@ -357,7 +319,7 @@ Fetches a single country by its capital city.
 #### Example:
 
 ```typescript
-const germany = await restCountries.getCountryByCapital({
+const { country: germany } = await restCountries.getCountryByCapital({
   capital: "Berlin",
   fields: ["names", "flag", "currencies"],
 });
@@ -377,7 +339,7 @@ Fetches a single country by a translated name.
 #### Example:
 
 ```typescript
-const germany = await restCountries.getCountryByTranslation({
+const { country: germany } = await restCountries.getCountryByTranslation({
   translation: "Deutschland",
   fields: ["cars", "capitals", "codes"],
 });
@@ -397,7 +359,7 @@ Fetches a single country by its demonym.
 #### Example:
 
 ```typescript
-const peru = await restCountries.getCountryByDemonym({
+const { country: peru } = await restCountries.getCountryByDemonym({
   demonym: "Peruvian",
   fields: ["cars", "capitals", "codes"],
 });
@@ -432,20 +394,21 @@ All filter keys are optional and fully typed. `classification` and `memberships`
 REST Countries v5 paginates results (default 25 per page, max 100). List methods expose `limit` and `offset` and return a `meta` object describing the current page:
 
 ```typescript
-const { countries, meta } = await restCountries.getCountriesByRegion({
+const result = await restCountries.getCountriesByRegion({
   region: "Africa",
   fields: ["names"],
   limit: 100,
   offset: 0,
 });
+if (!result.success) throw result.error;
 
-// meta: { total, count, limit, offset, more, request_id, duration }
-if (meta.more) {
+// result.meta: { total, count, limit, offset, more, request_id, duration }
+if (result.meta.more) {
   const next = await restCountries.getCountriesByRegion({
     region: "Africa",
     fields: ["names"],
     limit: 100,
-    offset: meta.offset + meta.limit,
+    offset: result.meta.offset + result.meta.limit,
   });
 }
 ```
@@ -458,8 +421,8 @@ Every method accepts an optional second argument with any valid `fetch` options 
 
 ```typescript
 // Next.js caching example
-const germany = await restCountries.getCountryByCode(
-  { code: "DEU", fields: ["names", "capitals"] },
+const { country: germany } = await restCountries.getCountryByCode(
+  { alpha_3: "DEU", fields: ["names", "capitals"] },
   { next: { revalidate: 7 * 24 * 3600 }, cache: "force-cache" },
 );
 ```
@@ -508,8 +471,8 @@ const { countries } = await restCountries.getCountries({ omitFields: ["leaders"]
 > **Note:** `omitFields` is applied at runtime only; it does not narrow the return type (you still get the full `Country` type). Use `fields` when you want the type narrowed.
 
 ```typescript
-const country = await restCountries.getCountryByCode({
-  code: "TUR",
+const { country } = await restCountries.getCountryByCode({
+  alpha_3: "TUR",
   fields: ["names", "capitals", "population"],
 });
 ```
@@ -529,7 +492,8 @@ import type { Country, Region, Cca2Code } from "@yusifaliyevpro/countries/types"
 **`Note:` If a long time has passed since the last update, the type data may be outdated.**
 
 - **`Country`**: Comprehensive type for a v5 country object.
-- **`CountryList`**: `{ countries: CountryPicker<T>[]; meta: ResponseMeta }` returned by list methods.
+- **`CountryListResult`**: Discriminated result of list methods — `{ success: true; countries; meta; error: undefined } | { success: false; countries: undefined; meta: undefined; error: Error }`.
+- **`CountryResult`**: Discriminated result of single-country methods (`country` instead of `countries`/`meta`).
 - **`ResponseMeta`**: Pagination metadata (`total`, `count`, `limit`, `offset`, `more`, `request_id`, `duration`).
 - **`CountryPicker`**: Picks the requested top-level fields from `Country`.
 - **`CountryFilters`**: Typed, composable filters for `getCountries` / `search`.
@@ -551,9 +515,11 @@ The `Country` type is **inferred from a [Zod Mini](https://zod.dev/packages/mini
 ```typescript
 import { countrySchema } from "@yusifaliyevpro/countries";
 
-const country = await restCountries.getCountryByCode({ code: "CAN" });
-const result = countrySchema.safeParse(country);
-if (!result.success) console.error(result.error.issues);
+const res = await restCountries.getCountryByCode({ alpha_3: "CAN" });
+if (res.success) {
+  const parsed = countrySchema.safeParse(res.country);
+  if (!parsed.success) console.error(parsed.error.issues);
+}
 ```
 
 Zod Mini is used to keep the footprint small, and the schema is only pulled into your bundle if you actually import `countrySchema` (the package is marked side-effect-free).
@@ -569,7 +535,7 @@ import { defineFields } from "@yusifaliyevpro/countries";
 
 const countryFields = defineFields(["names", "capitals", "population", "region", "codes", "flag"]);
 
-const country = await restCountries.getCountryByCode({ code: "DEU", fields: countryFields });
+const { country } = await restCountries.getCountryByCode({ alpha_3: "DEU", fields: countryFields });
 ```
 
 ---
@@ -586,7 +552,8 @@ export const countryFields = defineFields(["names", "capitals", "population", "r
 
 // src/app/page.tsx
 export default async function CountryPage() {
-  const country = await restCountries.getCountryByCode({ code: "AZ", fields: countryFields });
+  const { success, country, error } = await restCountries.getCountryByCode({ alpha_2: "AZ", fields: countryFields });
+  if (!success) throw error;
   return (
     <main>
       <CountryCard country={country} />
@@ -611,23 +578,27 @@ export function CountryCard({ country }: { country: CountryPicker<typeof country
 
 ## Error Handling
 
-Errors are handled gracefully and logged to the console. On a not-found, network, or authentication error the method resolves to `null` (single) or an empty page / `null` (lists).
+Methods **never throw and never return `null`**. Every failure — not-found, network error, or invalid API key — comes back as `{ success: false, error: Error }`. Narrow on `success` to handle it:
 
 ```typescript
-const data = await restCountries.getCountryByCode({
-  code: "XXX",
-  fields: ["names"],
-}); // null, with an error logged by the library
-
-const usa = await restCountries.getCountryByCode({
-  code: "USA",
-  fields: ["names", "population"],
-});
-
-// TypeScript Error — 'capitals' was not requested in fields
-console.log(usa.capitals);
-                ^^^^^^^^
+const res = await restCountries.getCountryByCode({ alpha_3: "XXX", fields: ["names"] });
+if (!res.success) {
+  console.error(res.error.message); // e.g. "Couldn't find any country…"
+} else {
+  console.log(res.country.names.common);
+}
 ```
+
+Because the result is a discriminated union, accessing the data before checking `success` is a **compile-time error** — you can't forget to handle failure:
+
+```typescript
+const res = await restCountries.getCountryByCode({ alpha_3: "USA", fields: ["names"] });
+
+res.country.names.common;
+//  ^^^^^^^ TS error: 'country' is possibly 'undefined' until you check `res.success`
+```
+
+Field selection is enforced the same way — accessing a field you didn't request (`fields: ["names"]` then `.capitals`) is a type error.
 
 ---
 

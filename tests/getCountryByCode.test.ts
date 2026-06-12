@@ -1,22 +1,32 @@
 import { rc } from "./client";
 
 test("fetches a country by alpha-3 code", async () => {
-  const country = await rc.getCountryByCode({ code: "AZE", fields: ["names", "codes"] });
-  expect(country?.names.common).toBe("Azerbaijan");
-  expect(country?.codes.alpha_3).toBe("AZE");
+  const result = await rc.getCountryByCode({ alpha_3: "AZE", fields: ["names", "codes"] });
+  if (!result.success) throw result.error;
+  expect(result.country.names.common).toBe("Azerbaijan");
+  expect(result.country.codes.alpha_3).toBe("AZE");
 });
 
 test("fetches a country by alpha-2 code", async () => {
-  const country = await rc.getCountryByCode({ code: "AZ", fields: ["codes"] });
-  expect(country?.codes.alpha_2).toBe("AZ");
+  const result = await rc.getCountryByCode({ alpha_2: "AZ", fields: ["codes"] });
+  if (!result.success) throw result.error;
+  expect(result.country.codes.alpha_2).toBe("AZ");
 });
 
-test("resolves a CIOC code via fallback", async () => {
-  const country = await rc.getCountryByCode({ code: "SUI", fields: ["names", "codes"] });
-  expect(country?.names.common).toBe("Switzerland");
+test("fetches a country by ccn3 code", async () => {
+  const result = await rc.getCountryByCode({ ccn3: "031", fields: ["names"] });
+  if (!result.success) throw result.error;
+  expect(result.country.names.common).toBe("Azerbaijan");
 });
 
-test("returns null for an unknown code", async () => {
-  const country = await rc.getCountryByCode({ code: "ZZZ", fields: ["names"] });
-  expect(country).toBeNull();
+test("fetches a country by cioc code", async () => {
+  const result = await rc.getCountryByCode({ cioc: "SUI", fields: ["names"] });
+  if (!result.success) throw result.error;
+  expect(result.country.names.common).toBe("Switzerland");
+});
+
+test("fails for an unknown code", async () => {
+  const result = await rc.getCountryByCode({ alpha_3: "ZZZ", fields: ["names"] });
+  expect(result.success).toBe(false);
+  if (!result.success) expect(result.error).toBeInstanceOf(Error);
 });
