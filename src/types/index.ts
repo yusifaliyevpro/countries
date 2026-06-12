@@ -6,9 +6,10 @@ import type { ccn3Codes } from "../data/ccn3";
 import type { ciocCodes } from "../data/cioc";
 import type { currencies } from "../data/currencies";
 import type { languages, supportedLanguages } from "../data/langs";
-import type { regions } from "../data/regions";
-import type { subregions } from "../data/subregions";
+import { regions } from "../data/regions";
+import { subregions } from "../data/subregions";
 import type { LiteralUnion } from "./common";
+import { PrettifyDeep } from "./helpers";
 
 const localizedName = z.strictObject({ common: z.string(), official: z.string() });
 const coordinates = z.strictObject({ lat: z.number(), lng: z.number() });
@@ -41,11 +42,11 @@ export const countrySchema = z.strictObject({
   codes: z.strictObject({
     alpha_2: z.string(),
     alpha_3: z.string(),
-    ccn3: z.optional(z.string()),
-    cioc: z.optional(z.string()),
-    fifa: z.optional(z.string()),
-    fips: z.optional(z.string()),
-    gec: z.optional(z.string()),
+    ccn3: z.string(),
+    cioc: z.string(),
+    fifa: z.string(),
+    fips: z.string(),
+    gec: z.string(),
   }),
   capitals: z.array(
     z.strictObject({
@@ -69,11 +70,11 @@ export const countrySchema = z.strictObject({
     url_png: z.string(),
     url_svg: z.string(),
   }),
-  region: z.string(),
-  subregion: z.optional(z.string()),
+  region: z.literal(regions),
+  subregion: z.literal([...subregions, ""]),
   area: z.strictObject({ kilometers: z.number(), miles: z.number() }),
   assets: z.array(z.string()),
-  borders: z.optional(z.array(z.string())),
+  borders: z.array(z.string()),
   calling_codes: z.array(z.string()),
   cars: z.strictObject({ driving_side: z.literal(["left", "right"]), signs: z.array(z.string()) }),
   classification: z.strictObject({
@@ -94,19 +95,17 @@ export const countrySchema = z.strictObject({
     z.record(z.string(), z.strictObject({ name: z.string(), symbol: z.string() })),
   ]),
   date: z.strictObject({
-    academic_year_start: z.optional(dayMonth),
-    fiscal_year_start: z.optional(
-      z.strictObject({
-        corporate: z.optional(z.strictObject({ basis: z.string(), day: z.number(), month: z.number() })),
-        government: z.optional(dayMonth),
-        personal: z.optional(dayMonth),
-      }),
-    ),
+    academic_year_start: dayMonth,
+    fiscal_year_start: z.strictObject({
+      corporate: z.strictObject({ basis: z.string(), day: z.number(), month: z.number() }),
+      government: dayMonth,
+      personal: dayMonth,
+    }),
     start_of_week: z.string(),
   }),
   demonyms: mapOrEmpty(z.strictObject({ f: z.string(), m: z.string() })),
-  economy: z.optional(z.strictObject({ gini_coefficient: mapOrEmpty(z.number()) })),
-  government_type: z.optional(z.string()),
+  economy: z.strictObject({ gini_coefficient: mapOrEmpty(z.number()) }),
+  government_type: z.string(),
   landlocked: z.boolean(),
   languages: z.array(
     z.strictObject({
@@ -146,7 +145,7 @@ export const countrySchema = z.strictObject({
   number_format: z.strictObject({ decimal_separator: z.string(), thousands_separator: z.string() }),
   parent: z.strictObject({ alpha_2: z.string(), alpha_3: z.string() }),
   population: z.number(),
-  postal_code: z.strictObject({ format: z.nullable(z.string()), regex: z.nullable(z.string()) }),
+  postal_code: z.strictObject({ format: z.string(), regex: z.string() }),
   timezones: z.array(z.string()),
   tlds: z.array(z.string()),
   uuid: z.string(),
@@ -161,7 +160,18 @@ export const countrySchema = z.strictObject({
  * > (e.g. `name` → `names`, `cca2`/`cca3` → `codes.alpha_2`/`codes.alpha_3`,
  * > `capital: string[]` → `capitals: { name, coordinates, attributes }[]`).
  */
-export type Country = z.infer<typeof countrySchema>;
+export type Country = PrettifyDeep<
+  Omit<z.infer<typeof countrySchema>, "subregion"> & {
+    /**
+     * A known subregion or `""`. Typed as {@link Subregion} (a `LiteralUnion`) so
+     * IDEs autocomplete the known values while still accepting any string — e.g.
+     * `country.subregion === "New Subregion"` does not error. The runtime schema
+     * stays strict (`z.literal`), so a genuinely new subregion is still caught by
+     * the conformance test.
+     */
+    subregion: Subregion;
+  }
+>;
 
 /**
  * Picks the requested top-level fields from {@link Country}.
