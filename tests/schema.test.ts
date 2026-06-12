@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 import type { Country } from "@yusifaliyevpro/countries";
 import { countrySchema } from "@yusifaliyevpro/countries";
 import { rc } from "./client";
+import { $ZodIssue } from "zod/v4/core";
 
 // Cached snapshot of every country so this test can run offline. The file is
 // gitignored. Delete it to force a fresh refetch from the live API on the next run.
@@ -25,7 +26,6 @@ async function fetchAllCountries(): Promise<Country[]> {
 /** Returns the cached countries if present, otherwise fetches, caches, and returns them. */
 async function loadAllCountries(): Promise<Country[]> {
   if (existsSync(CACHE_PATH)) {
-    console.log("Loading countries from cache...");
     return JSON.parse(readFileSync(CACHE_PATH, "utf8")) as Country[];
   }
   console.log("Fetching countries from API...");
@@ -33,6 +33,24 @@ async function loadAllCountries(): Promise<Country[]> {
   mkdirSync(dirname(CACHE_PATH), { recursive: true });
   writeFileSync(CACHE_PATH, JSON.stringify(countries));
   return countries;
+}
+
+function formatIssues(issues: $ZodIssue[], base = ""): string[] {
+  const lines: string[] = [];
+  for (const issue of issues) {
+    const path = [base, ...issue.path.map(String)].filter(Boolean).join(".") || "(root)";
+    if (issue.code === "unrecognized_keys") {
+      lines.push(`${path}: unexpected key(s) not in schema: ${(issue.keys ?? []).join(", ")}`);
+    } else if (issue.code === "invalid_union" && issue.errors) {
+      const branches = issue.errors.map((branch) => formatIssues(branch, path).join(" & "));
+      lines.push(`${path}: matched no union branch [${branches.join(" | ")}]`);
+    } else if (issue.code === "invalid_type") {
+      lines.push(`${path}: expected ${issue.expected ?? "?"} (${issue.message})`);
+    } else {
+      lines.push(`${path}: ${issue.message} (${issue.code})`);
+    }
+  }
+  return lines;
 }
 
 // `countrySchema` is the single source of truth for the `Country` type, so
@@ -48,10 +66,7 @@ test("every country in the API conforms to the Country schema", async () => {
     const result = countrySchema.safeParse(country);
     if (!result.success) {
       const name = country.names?.common ?? country.codes?.alpha_3 ?? "unknown";
-      const details = result.error.issues
-        .map((issue: { path: PropertyKey[]; message: string }) => `${issue.path.join(".") || "(root)"}: ${issue.message}`)
-        .join("; ");
-      failures.push(`${name}: ${details}`);
+      failures.push(`${name}: ${formatIssues(result.error.issues).join("; ")}`);
     }
   }
 
