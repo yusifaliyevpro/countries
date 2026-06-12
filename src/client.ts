@@ -1,6 +1,20 @@
 import { API_BASE_URL } from "./constants";
-import type { Capital, Country, CountryList, CountryPicker, Currency, Lang, Region, ResponseMeta, Subregion } from "./types";
-import type { Code } from "./types/common";
+import { countryFailure, errorFromResponse, countryListFailure, NOT_FOUND_MESSAGE, ok, type RawEnvelope } from "./helpers";
+import type {
+  Capital,
+  Cca2Code,
+  Cca3Code,
+  Ccn3Code,
+  CiocCode,
+  Country,
+  CountryListResult,
+  CountryPicker,
+  CountryResult,
+  Currency,
+  Lang,
+  Region,
+  Subregion,
+} from "./types";
 
 /**
  * Configuration for a {@link RestCountries} client instance.
@@ -40,6 +54,22 @@ export type CountryFilters = {
   memberships?: BooleanFlags<Country["memberships"]>;
 };
 
+/**
+ * Identifies a country by **exactly one** code type. Providing zero or more than
+ * one key is a type error.
+ *
+ * @example
+ * { alpha_3: "USA" }   // ISO 3166-1 alpha-3
+ * { alpha_2: "US" }    // ISO 3166-1 alpha-2
+ * { ccn3: "840" }      // ISO 3166-1 numeric
+ * { cioc: "USA" }      // IOC code
+ */
+export type CountryCodeQuery =
+  | { alpha_2: Cca2Code; alpha_3?: never; ccn3?: never; cioc?: never }
+  | { alpha_3: Cca3Code; alpha_2?: never; ccn3?: never; cioc?: never }
+  | { ccn3: Ccn3Code; alpha_2?: never; alpha_3?: never; cioc?: never }
+  | { cioc: CiocCode; alpha_2?: never; alpha_3?: never; ccn3?: never };
+
 /** Field selection shared by every endpoint. */
 type Selection<T extends Fields> = {
   /** Top-level fields to include (maps to `response_fields`). */
@@ -58,11 +88,6 @@ type Pagination = {
 
 type RequestParams<T extends Fields> = { q?: string; filters?: CountryFilters } & Selection<T> & Pagination;
 
-type RawEnvelope<C> = {
-  data?: { objects?: (C & { _match?: unknown; _meta?: unknown })[]; meta?: ResponseMeta };
-  errors?: { message: string }[];
-};
-
 function appendFilters(search: URLSearchParams, filters: CountryFilters): void {
   const { region, subregion, continent, landlocked, classification, memberships } = filters;
   if (region !== undefined) search.set("region", region);
@@ -77,20 +102,6 @@ function appendFilters(search: URLSearchParams, filters: CountryFilters): void {
   }
 }
 
-function handleNotFound(): void {
-  console.error(
-    "Couldn't find any country that matches your query. If you think this is a bug, please report it via GitHub issues: https://github.com/yusifaliyevpro/countries",
-  );
-}
-
-function handleNetworkError(error: unknown): void {
-  console.warn("A network or REST Countries API side error happened while fetching data. Try again later.");
-  console.warn(
-    "If this error persists, please verify the status of the REST Countries API. If the issue continues, feel free to report it on GitHub: https://github.com/yusifaliyevpro/countries",
-  );
-  console.error(error);
-}
-
 /**
  * A typed client for the REST Countries **v5** API.
  *
@@ -100,8 +111,9 @@ function handleNetworkError(error: unknown): void {
  * @example
  * const restCountries = new RestCountries({ apiKey: process.env.REST_COUNTRIES_API_KEY! });
  *
- * const canada = await restCountries.getCountryByCode({ code: "CAN", fields: ["names", "capitals"] });
- * const { countries } = await restCountries.getCountries({ filters: { region: "Europe", memberships: { eu: true } } });
+ * const { success, country, error } = await restCountries.getCountryByCode({ alpha_3: "CAN", fields: ["names"] });
+ * if (!success) throw error;
+ * console.log(country.names.common);
  */
 export class RestCountries {
   readonly #apiKey: string;
@@ -109,21 +121,25 @@ export class RestCountries {
   readonly #fetch: typeof fetch;
 
   constructor(config: RestCountriesConfig) {
-    if (!config?.apiKey) throw new Error("RestCountries: `apiKey` is required. Get one at https://restcountries.com/sign-up");
-    this.#apiKey = config.apiKey;
+    const apiKey = config?.apiKey?.trim();
+    if (!apiKey) {
+      throw new Error("RestCountries: `apiKey` is required and cannot be empty. Get one at https://restcountries.com/sign-up");
+    }
+    this.#apiKey = apiKey;
     this.#baseURL = config.baseURL ?? API_BASE_URL;
     this.#fetch = config.fetch ?? globalThis.fetch;
   }
 
   /**
-   * Performs a request against the v5 API and unwraps the `data` envelope.
-   * Returns `null` on a not-found / network / auth error (after logging).
+   * Performs a request against the v5 API and unwraps the `data` envelope into
+   * a {@link CountryListResult}. Never throws — failures are returned as
+   * `{ success: false, error }`.
    */
   async #request<T extends Fields>(
     path: string,
     params: RequestParams<T>,
     fetchOptions?: RequestInit,
-  ): Promise<{ countries: CountryPicker<T>[]; meta: ResponseMeta } | null> {
+  ): Promise<CountryListResult<T>> {
     try {
       const url = new URL(this.#baseURL.replace(/\/$/, "") + path);
       if (params.q !== undefined) url.searchParams.set("q", params.q);
@@ -140,15 +156,18 @@ export class RestCountries {
         headers: { Authorization: `Bearer ${this.#apiKey}`, ...fetchOptions?.headers },
       });
 
-      if (response.status === 401 || response.status === 403) {
-        console.error("REST Countries: authentication failed. Check that your `apiKey` is valid and active.");
-        return null;
+      // Read as text first so a non-JSON error body (HTML 500, plain-text rate
+      // limit, …) doesn't throw and lose the status — we surface it instead.
+      const rawText = await response.text();
+      let body: RawEnvelope<CountryPicker<T>> | undefined;
+      try {
+        body = rawText ? (JSON.parse(rawText) as RawEnvelope<CountryPicker<T>>) : undefined;
+      } catch {
+        body = undefined;
       }
 
-      const body = (await response.json()) as RawEnvelope<CountryPicker<T>>;
-      if (!response.ok || !body.data?.objects) {
-        handleNotFound();
-        return null;
+      if (!response.ok || !body?.data?.objects) {
+        return countryListFailure(errorFromResponse(response, body, rawText));
       }
 
       // Strip the per-result `_match` / `_meta` search annotations so callers
@@ -163,21 +182,19 @@ export class RestCountries {
         request_id: "",
         duration: 0,
       };
-      return { countries, meta };
+      return ok({ countries, meta });
     } catch (error) {
-      handleNetworkError(error);
-      return null;
+      return countryListFailure(error instanceof Error ? error : new Error(String(error)));
     }
   }
 
-  /** Like {@link RestCountries.#request} but returns only the first matching country. */
-  async #first<T extends Fields>(
-    path: string,
-    params: RequestParams<T>,
-    fetchOptions?: RequestInit,
-  ): Promise<CountryPicker<T> | null> {
+  /** Like {@link RestCountries.#request} but resolves to a single-country {@link CountryResult}. */
+  async #first<T extends Fields>(path: string, params: RequestParams<T>, fetchOptions?: RequestInit): Promise<CountryResult<T>> {
     const result = await this.#request<T>(path, { ...params, limit: 1 }, fetchOptions);
-    return result?.countries[0] ?? null;
+    if (!result.success) return countryFailure(result.error);
+    const country = result.countries[0];
+    if (!country) return countryFailure(new Error(NOT_FOUND_MESSAGE));
+    return ok({ country });
   }
 
   /**
@@ -195,7 +212,7 @@ export class RestCountries {
   async getCountries<T extends Fields>(
     { q, filters, fields, omitFields, limit, offset }: { q?: string; filters?: CountryFilters } & Selection<T> & Pagination = {},
     fetchOptions?: RequestInit,
-  ): Promise<CountryList<T> | null> {
+  ): Promise<CountryListResult<T>> {
     return this.#request<T>("", { q, filters, fields, omitFields, limit, offset }, fetchOptions);
   }
 
@@ -210,32 +227,40 @@ export class RestCountries {
     q: string,
     { filters, fields, omitFields, limit, offset }: { filters?: CountryFilters } & Selection<T> & Pagination = {},
     fetchOptions?: RequestInit,
-  ): Promise<CountryList<T> | null> {
+  ): Promise<CountryListResult<T>> {
     return this.#request<T>("", { q, filters, fields, omitFields, limit, offset }, fetchOptions);
   }
 
   /**
-   * Fetches a single country by its code (alpha-2, alpha-3, CCN3 or CIOC).
-   * Tries the exact-match route for the detected code type, falling back to
-   * CIOC for three-letter codes.
+   * Fetches a single country by **one** code, identified by its kind. Pass
+   * exactly one of `alpha_2`, `alpha_3`, `ccn3`, or `cioc` (see {@link CountryCodeQuery}).
    *
    * @example
-   * const usa = await restCountries.getCountryByCode({ code: "USA", fields: ["names", "flag"] });
+   * const { success, country, error } = await restCountries.getCountryByCode({ alpha_3: "USA", fields: ["names", "flag"] });
+   * if (success) console.log(country.names.common);
+   *
+   * @example
+   * await restCountries.getCountryByCode({ cioc: "SUI" }); // Switzerland by IOC code
    */
   async getCountryByCode<T extends Fields>(
-    { code, fields, omitFields }: { code: Code } & Selection<T>,
+    { alpha_2, alpha_3, ccn3, cioc, fields, omitFields }: CountryCodeQuery & Selection<T>,
     fetchOptions?: RequestInit,
-  ): Promise<CountryPicker<T> | null> {
-    const value = String(code).trim();
-    let property: string;
-    if (/^\d+$/.test(value)) property = "codes.ccn3";
-    else if (value.length === 2) property = "codes.alpha_2";
-    else property = "codes.alpha_3";
+  ): Promise<CountryResult<T>> {
+    const codes = [
+      ["codes.alpha_2", alpha_2],
+      ["codes.alpha_3", alpha_3],
+      ["codes.ccn3", ccn3],
+      ["codes.cioc", cioc],
+    ] as const;
+    const match = codes.find(([, value]) => value !== undefined);
 
-    const country = await this.#first<T>(`/${property}/${encodeURIComponent(value)}`, { fields, omitFields }, fetchOptions);
-    if (country || property !== "codes.alpha_3") return country;
-    // Three-letter code that isn't an alpha-3 — it may be a CIOC code (e.g. "SUI").
-    return this.#first<T>(`/codes.cioc/${encodeURIComponent(value)}`, { fields, omitFields }, fetchOptions);
+    if (!match) {
+      return countryFailure(
+        new Error("RestCountries: provide exactly one country code — `alpha_2`, `alpha_3`, `ccn3`, or `cioc`."),
+      );
+    }
+    const [property, value] = match;
+    return this.#first<T>(`/${property}/${encodeURIComponent(String(value))}`, { fields, omitFields }, fetchOptions);
   }
 
   /**
@@ -249,7 +274,7 @@ export class RestCountries {
   async getCountriesByName<T extends Fields>(
     { name, fullText, fields, omitFields, limit, offset }: { name: string; fullText?: boolean } & Selection<T> & Pagination,
     fetchOptions?: RequestInit,
-  ): Promise<CountryList<T> | null> {
+  ): Promise<CountryListResult<T>> {
     const path = fullText ? `/names.common/${encodeURIComponent(name)}` : "/name";
     return this.#request<T>(path, { q: fullText ? undefined : name, fields, omitFields, limit, offset }, fetchOptions);
   }
@@ -263,7 +288,7 @@ export class RestCountries {
   async getCountriesByRegion<T extends Fields>(
     { region, fields, omitFields, limit, offset }: { region: Region } & Selection<T> & Pagination,
     fetchOptions?: RequestInit,
-  ): Promise<CountryList<T> | null> {
+  ): Promise<CountryListResult<T>> {
     return this.#request<T>(`/region/${encodeURIComponent(region)}`, { fields, omitFields, limit, offset }, fetchOptions);
   }
 
@@ -276,7 +301,7 @@ export class RestCountries {
   async getCountriesBySubregion<T extends Fields>(
     { subregion, fields, omitFields, limit, offset }: { subregion: Subregion } & Selection<T> & Pagination,
     fetchOptions?: RequestInit,
-  ): Promise<CountryList<T> | null> {
+  ): Promise<CountryListResult<T>> {
     return this.#request<T>(`/subregion/${encodeURIComponent(subregion)}`, { fields, omitFields, limit, offset }, fetchOptions);
   }
 
@@ -289,7 +314,7 @@ export class RestCountries {
   async getCountriesByLang<T extends Fields>(
     { lang, fields, omitFields, limit, offset }: { lang: Lang } & Selection<T> & Pagination,
     fetchOptions?: RequestInit,
-  ): Promise<CountryList<T> | null> {
+  ): Promise<CountryListResult<T>> {
     return this.#request<T>("/languages", { q: lang as string, fields, omitFields, limit, offset }, fetchOptions);
   }
 
@@ -302,7 +327,7 @@ export class RestCountries {
   async getCountriesByCurrency<T extends Fields>(
     { currency, fields, omitFields, limit, offset }: { currency: Currency } & Selection<T> & Pagination,
     fetchOptions?: RequestInit,
-  ): Promise<CountryList<T> | null> {
+  ): Promise<CountryListResult<T>> {
     return this.#request<T>("/currencies", { q: currency as string, fields, omitFields, limit, offset }, fetchOptions);
   }
 
@@ -310,12 +335,12 @@ export class RestCountries {
    * Fetches a single country by its capital city.
    *
    * @example
-   * const japan = await restCountries.getCountryByCapital({ capital: "Tokyo", fields: ["names"] });
+   * const { success, country } = await restCountries.getCountryByCapital({ capital: "Tokyo", fields: ["names"] });
    */
   async getCountryByCapital<T extends Fields>(
     { capital, fields, omitFields }: { capital: Capital } & Selection<T>,
     fetchOptions?: RequestInit,
-  ): Promise<CountryPicker<T> | null> {
+  ): Promise<CountryResult<T>> {
     return this.#first<T>("/capitals", { q: capital as string, fields, omitFields }, fetchOptions);
   }
 
@@ -323,12 +348,12 @@ export class RestCountries {
    * Fetches a single country by demonym (e.g. "Canadian", "French").
    *
    * @example
-   * const canada = await restCountries.getCountryByDemonym({ demonym: "Canadian", fields: ["names"] });
+   * const { success, country } = await restCountries.getCountryByDemonym({ demonym: "Canadian", fields: ["names"] });
    */
   async getCountryByDemonym<T extends Fields>(
     { demonym, fields, omitFields }: { demonym: string } & Selection<T>,
     fetchOptions?: RequestInit,
-  ): Promise<CountryPicker<T> | null> {
+  ): Promise<CountryResult<T>> {
     return this.#first<T>("/demonyms", { q: demonym, fields, omitFields }, fetchOptions);
   }
 
@@ -336,12 +361,12 @@ export class RestCountries {
    * Fetches a single country by a translated name (e.g. "Deutschland", "Alemania").
    *
    * @example
-   * const germany = await restCountries.getCountryByTranslation({ translation: "Deutschland", fields: ["names"] });
+   * const { success, country } = await restCountries.getCountryByTranslation({ translation: "Deutschland", fields: ["names"] });
    */
   async getCountryByTranslation<T extends Fields>(
     { translation, fields, omitFields }: { translation: string } & Selection<T>,
     fetchOptions?: RequestInit,
-  ): Promise<CountryPicker<T> | null> {
+  ): Promise<CountryResult<T>> {
     return this.#first<T>("/names.translations", { q: translation, fields, omitFields }, fetchOptions);
   }
 }

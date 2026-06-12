@@ -1,9 +1,11 @@
 import type { Country } from "./types";
 
 export { RestCountries } from "./client";
-export type { CountryFilters, RestCountriesConfig } from "./client";
+export type { CountryCodeQuery, CountryFilters, RestCountriesConfig } from "./client";
+export { ok } from "./helpers";
+export type { ErrorCause } from "./helpers";
 export { countrySchema } from "./types";
-export type { Country, CountryList, CountryPicker, ResponseMeta } from "./types";
+export type { Country, CountryListResult, CountryPicker, CountryResult, ResponseMeta } from "./types";
 
 /**
  * Type-safe helper for declaring a `fields` array outside of a call site while

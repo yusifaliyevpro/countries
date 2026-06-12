@@ -15,7 +15,7 @@ async function fetchAllCountries(): Promise<Country[]> {
   let offset = 0;
   for (;;) {
     const page = await rc.getCountries({ limit: 100, offset });
-    if (!page) throw new Error(`Failed to fetch countries at offset ${offset}`);
+    if (!page.success) throw page.error;
     all.push(...page.countries);
     if (!page.meta.more) break;
     offset += page.meta.limit;

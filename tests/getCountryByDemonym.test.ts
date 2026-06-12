@@ -1,11 +1,12 @@
 import { rc } from "./client";
 
 test("fetches a country by demonym", async () => {
-  const country = await rc.getCountryByDemonym({ demonym: "Peruvian", fields: ["names"] });
-  expect(country?.names.common).toBe("Peru");
+  const result = await rc.getCountryByDemonym({ demonym: "Peruvian", fields: ["names"] });
+  if (!result.success) throw result.error;
+  expect(result.country.names.common).toBe("Peru");
 });
 
-test("returns null for an unknown demonym", async () => {
-  const country = await rc.getCountryByDemonym({ demonym: "aaabbbcccc", fields: ["names"] });
-  expect(country).toBeNull();
+test("fails for an unknown demonym", async () => {
+  const result = await rc.getCountryByDemonym({ demonym: "aaabbbcccc", fields: ["names"] });
+  expect(result.success).toBe(false);
 });
