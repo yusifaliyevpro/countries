@@ -50,10 +50,13 @@ export function errorFromResponse(response: Response, body: RawEnvelope<unknown>
       summary = "unauthorized — the `apiKey` is missing, unrecognized, revoked, or expired";
       break;
     case 403:
-      summary = "forbidden — the account is frozen (e.g. monthly request limit reached) or a premium field was requested on a Free plan";
+      summary =
+        "forbidden — the account is frozen (e.g. monthly request limit reached) or a premium field was requested on a Free plan";
       break;
     case 404:
-      summary = serverMessages.length ? "not found — unknown endpoint, or the property isn't readable/searchable" : NOT_FOUND_MESSAGE;
+      summary = serverMessages.length
+        ? "not found — unknown endpoint, or the property isn't readable/searchable"
+        : NOT_FOUND_MESSAGE;
       break;
     case 405:
       summary = "method not allowed — REST Countries endpoints are GET-only";
