@@ -44,27 +44,24 @@ beforeAll(async () => {
   }
 }, 30_000);
 
-// `caseInsensitive` for codes: the data files store them lowercase while the API
-// returns them uppercase. Names (capitals, currencies, languages, …) match exactly.
 const datasets = [
-  { label: "ALPHA_2_CODES", file: ALPHA_2_CODES, caseInsensitive: true },
-  { label: "ALPHA_3_CODES", file: ALPHA_3_CODES, caseInsensitive: true },
-  { label: "CCN3_CODES", file: CCN3_CODES, caseInsensitive: false },
-  { label: "CIOC_CODES", file: CIOC_CODES, caseInsensitive: true },
-  { label: "CAPITALS", file: CAPITALS, caseInsensitive: false },
-  { label: "CURRENCIES", file: CURRENCIES, caseInsensitive: false },
-  { label: "LANGUAGES", file: LANGUAGES, caseInsensitive: false },
-  { label: "REGIONS", file: REGIONS, caseInsensitive: false },
-  { label: "SUBREGIONS", file: SUBREGIONS, caseInsensitive: false },
+  { label: "ALPHA_2_CODES", file: ALPHA_2_CODES },
+  { label: "ALPHA_3_CODES", file: ALPHA_3_CODES },
+  { label: "CCN3_CODES", file: CCN3_CODES },
+  { label: "CIOC_CODES", file: CIOC_CODES },
+  { label: "CAPITALS", file: CAPITALS },
+  { label: "CURRENCIES", file: CURRENCIES },
+  { label: "LANGUAGES", file: LANGUAGES },
+  { label: "REGIONS", file: REGIONS },
+  { label: "SUBREGIONS", file: SUBREGIONS },
 ] as const;
 
-// Each `src/data` constant must match the live country data exactly, in both
-// directions: an entry we list that the API doesn't have is stale; a value the
-// API has that we didn't list is missing. Either one fails the test.
-test.each(datasets)("$label is in sync with the live country data", ({ label, file, caseInsensitive }) => {
-  const norm = (value: string) => (caseInsensitive ? value.toLowerCase() : value);
-  const listed = new Set(file.map(norm));
-  const present = new Set([...actual[label]].map(norm));
+// Each `src/data` constant must match the live country data exactly — including
+// casing — in both directions: an entry we list that the API doesn't have is
+// stale; a value the API has that we didn't list is missing. Either one fails.
+test.each(datasets)("$label is in sync with the live country data", ({ label, file }) => {
+  const listed = new Set<string>(file);
+  const present = actual[label];
 
   const missing = [...present].filter((value) => !listed.has(value)).sort();
   const stale = [...listed].filter((value) => !present.has(value)).sort();
