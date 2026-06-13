@@ -1,4 +1,4 @@
-export const languages = [
+export const LANGUAGES = [
   "Afrikaans",
   "Albanian",
   "Amharic",
@@ -156,7 +156,7 @@ export const languages = [
   "Zulu",
 ] as const;
 
-export const supportedLanguages = [
+export const SUPPORTED_LANGUAGES = [
   "ara",
   "bre",
   "ces",

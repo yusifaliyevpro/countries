@@ -1,1 +1,1 @@
-export const regions = ["Africa", "Americas", "Antarctic", "Asia", "Europe", "Oceania"] as const;
+export const REGIONS = ["Africa", "Americas", "Antarctic", "Asia", "Europe", "Oceania"] as const;

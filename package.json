@@ -35,13 +35,15 @@
   "keywords": [
     "countries",
     "restcountries",
+    "rest-countries",
     "country-api",
     "typescript",
     "iso3166",
-    "cca2",
-    "cca3",
+    "alpha_2",
+    "alpha_3",
     "country-data",
     "world-countries",
+    "capitals",
     "capital-cities",
     "region",
     "flags"

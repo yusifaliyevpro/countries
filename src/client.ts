@@ -2,8 +2,8 @@ import { API_BASE_URL } from "./constants";
 import { countryFailure, errorFromResponse, countryListFailure, NOT_FOUND_MESSAGE, ok, type RawEnvelope } from "./helpers";
 import type {
   Capital,
-  Cca2Code,
-  Cca3Code,
+  Alpha_2Code,
+  Alpha_3Code,
   Ccn3Code,
   CiocCode,
   Country,
@@ -11,7 +11,7 @@ import type {
   CountryPicker,
   CountryResult,
   Currency,
-  Lang,
+  Language,
   Region,
   Subregion,
 } from "./types";
@@ -65,8 +65,8 @@ export type CountryFilters = {
  * { cioc: "USA" }      // IOC code
  */
 export type CountryCodeQuery =
-  | { alpha_2: Cca2Code; alpha_3?: never; ccn3?: never; cioc?: never }
-  | { alpha_3: Cca3Code; alpha_2?: never; ccn3?: never; cioc?: never }
+  | { alpha_2: Alpha_2Code; alpha_3?: never; ccn3?: never; cioc?: never }
+  | { alpha_3: Alpha_3Code; alpha_2?: never; ccn3?: never; cioc?: never }
   | { ccn3: Ccn3Code; alpha_2?: never; alpha_3?: never; cioc?: never }
   | { cioc: CiocCode; alpha_2?: never; alpha_3?: never; ccn3?: never };
 
@@ -312,7 +312,7 @@ export class RestCountries {
    * const { countries } = await restCountries.getCountriesByLang({ lang: "Spanish", fields: ["names"] });
    */
   async getCountriesByLang<T extends Fields>(
-    { lang, fields, omitFields, limit, offset }: { lang: Lang } & Selection<T> & Pagination,
+    { lang, fields, omitFields, limit, offset }: { lang: Language } & Selection<T> & Pagination,
     fetchOptions?: RequestInit,
   ): Promise<CountryListResult<T>> {
     return this.#request<T>("/languages", { q: lang as string, fields, omitFields, limit, offset }, fetchOptions);

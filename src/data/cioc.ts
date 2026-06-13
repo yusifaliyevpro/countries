@@ -1,4 +1,4 @@
-export const ciocCodes = [
+export const CIOC_CODES = [
   "afg",
   "alb",
   "alg",

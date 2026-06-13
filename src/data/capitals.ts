@@ -1,4 +1,4 @@
-export const capitals = [
+export const CAPITALS = [
   "Abu Dhabi",
   "Abuja",
   "Accra",

@@ -1,4 +1,4 @@
-export const subregions = [
+export const SUBREGIONS = [
   "Australia and New Zealand",
   "Caribbean",
   "Central America",

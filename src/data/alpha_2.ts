@@ -1,4 +1,4 @@
-export const cca2Codes = [
+export const ALPHA_2_CODES = [
   "ad",
   "ae",
   "af",

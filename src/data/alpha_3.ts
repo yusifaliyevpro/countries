@@ -1,4 +1,4 @@
-export const cca3Codes = [
+export const ALPHA_3_CODES = [
   "abw",
   "afg",
   "ago",

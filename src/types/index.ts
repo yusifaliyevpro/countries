@@ -1,13 +1,13 @@
 import * as z from "zod/mini";
-import type { capitals } from "../data/capitals";
-import type { cca2Codes } from "../data/cca2.codes";
-import type { cca3Codes } from "../data/cca3.codes";
-import type { ccn3Codes } from "../data/ccn3";
-import type { ciocCodes } from "../data/cioc";
-import type { currencies } from "../data/currencies";
-import type { languages, supportedLanguages } from "../data/langs";
-import { regions } from "../data/regions";
-import { subregions } from "../data/subregions";
+import type { CAPITALS } from "../data/capitals";
+import type { ALPHA_2_CODES } from "../data/alpha_2";
+import type { ALPHA_3_CODES } from "../data/alpha_3";
+import type { CCN3_CODES } from "../data/ccn3";
+import type { CIOC_CODES } from "../data/cioc";
+import type { CURRENCIES } from "../data/currencies";
+import type { LANGUAGES, SUPPORTED_LANGUAGES } from "../data/langs";
+import { REGIONS } from "../data/regions";
+import { SUBREGIONS } from "../data/subregions";
 import type { LiteralUnion } from "./common";
 import { PrettifyDeep } from "./helpers";
 
@@ -70,8 +70,8 @@ export const countrySchema = z.strictObject({
     url_png: z.string(),
     url_svg: z.string(),
   }),
-  region: z.literal(regions),
-  subregion: z.literal([...subregions, ""]),
+  region: z.literal(REGIONS),
+  subregion: z.literal([...SUBREGIONS, ""]),
   area: z.strictObject({ kilometers: z.number(), miles: z.number() }),
   assets: z.array(z.string()),
   borders: z.array(z.string()),
@@ -222,13 +222,13 @@ export type CountryResult<T extends readonly (keyof Country)[]> =
   | { success: true; country: CountryPicker<T>; error: undefined }
   | { success: false; country: undefined; error: Error };
 
-export type SupportedLanguages = (typeof supportedLanguages)[number];
-export type Cca3Code = LiteralUnion<(typeof cca3Codes)[number]>;
-export type Cca2Code = LiteralUnion<(typeof cca2Codes)[number]>;
-export type Capital = LiteralUnion<(typeof capitals)[number]>;
-export type CiocCode = LiteralUnion<(typeof ciocCodes)[number]>;
-export type Ccn3Code = LiteralUnion<(typeof ccn3Codes)[number]>;
-export type Region = (typeof regions)[number];
-export type Subregion = LiteralUnion<(typeof subregions)[number]>;
-export type Lang = LiteralUnion<(typeof languages)[number]>;
-export type Currency = LiteralUnion<(typeof currencies)[number]>;
+export type SupportedLanguages = (typeof SUPPORTED_LANGUAGES)[number];
+export type Alpha_3Code = LiteralUnion<(typeof ALPHA_3_CODES)[number]>;
+export type Alpha_2Code = LiteralUnion<(typeof ALPHA_2_CODES)[number]>;
+export type Capital = LiteralUnion<(typeof CAPITALS)[number]>;
+export type CiocCode = LiteralUnion<(typeof CIOC_CODES)[number]>;
+export type Ccn3Code = LiteralUnion<(typeof CCN3_CODES)[number]>;
+export type Region = (typeof REGIONS)[number];
+export type Subregion = LiteralUnion<(typeof SUBREGIONS)[number]>;
+export type Language = LiteralUnion<(typeof LANGUAGES)[number]>;
+export type Currency = LiteralUnion<(typeof CURRENCIES)[number]>;
