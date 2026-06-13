@@ -24,18 +24,23 @@ const actual = {
 
 beforeAll(async () => {
   const countries = await loadAllCountries();
+  // Unrecognized territories (Abkhazia, Northern Cyprus, …) return empty strings
+  // for missing codes/values, so only collect non-empty ones.
+  const add = (set: Set<string>, value: string | undefined) => {
+    if (value) set.add(value);
+  };
   for (const c of countries) {
-    actual.ALPHA_2_CODES.add(c.codes.alpha_2);
-    actual.ALPHA_3_CODES.add(c.codes.alpha_3);
-    if (c.codes.ccn3) actual.CCN3_CODES.add(c.codes.ccn3);
-    if (c.codes.cioc) actual.CIOC_CODES.add(c.codes.cioc);
-    for (const capital of c.capitals) actual.CAPITALS.add(capital.name);
+    add(actual.ALPHA_2_CODES, c.codes.alpha_2);
+    add(actual.ALPHA_3_CODES, c.codes.alpha_3);
+    add(actual.CCN3_CODES, c.codes.ccn3);
+    add(actual.CIOC_CODES, c.codes.cioc);
+    for (const capital of c.capitals) add(actual.CAPITALS, capital.name);
     // currencies is usually an array, but a few entities use the old record shape.
     const currencyList = Array.isArray(c.currencies) ? c.currencies : Object.values(c.currencies);
-    for (const currency of currencyList) actual.CURRENCIES.add(currency.name);
-    for (const language of c.languages) actual.LANGUAGES.add(language.name);
-    actual.REGIONS.add(c.region);
-    if (c.subregion) actual.SUBREGIONS.add(c.subregion); // skip the "" placeholder
+    for (const currency of currencyList) add(actual.CURRENCIES, currency.name);
+    for (const language of c.languages) add(actual.LANGUAGES, language.name);
+    add(actual.REGIONS, c.region);
+    add(actual.SUBREGIONS, c.subregion);
   }
 }, 30_000);
 
