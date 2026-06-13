@@ -1,4 +1,4 @@
-export const SUPPORTED_LANGUAGES = [
+export const SUPPORTED_TRANSLATION_KEYS = [
   "ara",
   "bre",
   "ces",

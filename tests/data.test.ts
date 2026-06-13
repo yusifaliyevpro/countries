@@ -7,7 +7,7 @@ import { CURRENCIES } from "../src/data/currencies";
 import { LANGUAGES } from "../src/data/languages";
 import { REGIONS } from "../src/data/regions";
 import { SUBREGIONS } from "../src/data/subregions";
-import { SUPPORTED_LANGUAGES } from "../src/data/supported_languages";
+import { SUPPORTED_TRANSLATION_KEYS } from "../src/data/translation_keys";
 import { loadAllCountries } from "./all-countries";
 
 // The actual values present in the live country data, collected once.
@@ -19,7 +19,7 @@ const actual = {
   CAPITALS: new Set<string>(),
   CURRENCIES: new Set<string>(),
   LANGUAGES: new Set<string>(),
-  SUPPORTED_LANGUAGES: new Set<string>(),
+  SUPPORTED_TRANSLATION_KEYS: new Set<string>(),
   REGIONS: new Set<string>(),
   SUBREGIONS: new Set<string>(),
 };
@@ -44,7 +44,7 @@ beforeAll(async () => {
     // SUPPORTED_LANGUAGES are the language codes used as keys of `names.translations`
     // (an empty `[]` for entities with no translations — skip those).
     if (!Array.isArray(c.names.translations)) {
-      for (const code of Object.keys(c.names.translations)) add(actual.SUPPORTED_LANGUAGES, code);
+      for (const code of Object.keys(c.names.translations)) add(actual.SUPPORTED_TRANSLATION_KEYS, code);
     }
     add(actual.REGIONS, c.region);
     add(actual.SUBREGIONS, c.subregion);
@@ -59,7 +59,7 @@ const datasets = [
   { label: "CAPITALS", file: CAPITALS },
   { label: "CURRENCIES", file: CURRENCIES },
   { label: "LANGUAGES", file: LANGUAGES },
-  { label: "SUPPORTED_LANGUAGES", file: SUPPORTED_LANGUAGES },
+  { label: "SUPPORTED_TRANSLATION_KEYS", file: SUPPORTED_TRANSLATION_KEYS },
   { label: "REGIONS", file: REGIONS },
   { label: "SUBREGIONS", file: SUBREGIONS },
 ] as const;

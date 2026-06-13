@@ -42,12 +42,12 @@ const checks: Check[] = [
     onFail: "pnpm prettier --write .",
   },
   {
-    name: "TypeScript — type check",
-    cmd: "pnpm tsc --noEmit",
-  },
-  {
     name: "tsdown — check for build errors",
     cmd: "pnpm build",
+  },
+  {
+    name: "TypeScript — type check",
+    cmd: "pnpm tsc --noEmit",
   },
 ];
 

@@ -6,7 +6,7 @@ import type { CCN3_CODES } from "../data/ccn3";
 import type { CIOC_CODES } from "../data/cioc";
 import type { CURRENCIES } from "../data/currencies";
 import type { LANGUAGES } from "../data/languages";
-import type { SUPPORTED_LANGUAGES } from "../data/supported_languages";
+import type { SUPPORTED_TRANSLATION_KEYS } from "../data/translation_keys";
 import { REGIONS } from "../data/regions";
 import { SUBREGIONS } from "../data/subregions";
 import type { LiteralUnion } from "./common";
@@ -223,7 +223,7 @@ export type CountryResult<T extends readonly (keyof Country)[]> =
   | { success: true; country: CountryPicker<T>; error: undefined }
   | { success: false; country: undefined; error: Error };
 
-export type SupportedLanguages = (typeof SUPPORTED_LANGUAGES)[number];
+export type SupportedTranslationKey = (typeof SUPPORTED_TRANSLATION_KEYS)[number];
 export type Alpha_3Code = LiteralUnion<(typeof ALPHA_3_CODES)[number]>;
 export type Alpha_2Code = LiteralUnion<(typeof ALPHA_2_CODES)[number]>;
 export type Capital = LiteralUnion<(typeof CAPITALS)[number]>;
