@@ -18,6 +18,7 @@
   "scripts": {
     "build": "tsdown",
     "check": "node scripts/pr-checks.ts",
+    "sort-data": "node scripts/sort-data.ts",
     "test": "tsdown && jest",
     "test:schema": "tsdown && jest tests/schema.test.ts",
     "test:data": "tsdown && jest tests/data.test.ts"
