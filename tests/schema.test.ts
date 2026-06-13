@@ -1,39 +1,6 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import type { Country } from "@yusifaliyevpro/countries";
 import { countrySchema } from "@yusifaliyevpro/countries";
-import { rc } from "./client";
 import { $ZodIssue } from "zod/v4/core";
-
-// Cached snapshot of every country so this test can run offline. The file is
-// gitignored. Delete it to force a fresh refetch from the live API on the next run.
-const CACHE_PATH = resolve(__dirname, ".cache/all-countries.json");
-
-/** Fetches every country (all properties) by paging through the live API. */
-async function fetchAllCountries(): Promise<Country[]> {
-  const all: Country[] = [];
-  let offset = 0;
-  for (;;) {
-    const page = await rc.getCountries({ limit: 100, offset });
-    if (!page.success) throw page.error;
-    all.push(...page.countries);
-    if (!page.meta.more) break;
-    offset += page.meta.limit;
-  }
-  return all;
-}
-
-/** Returns the cached countries if present, otherwise fetches, caches, and returns them. */
-async function loadAllCountries(): Promise<Country[]> {
-  if (existsSync(CACHE_PATH)) {
-    return JSON.parse(readFileSync(CACHE_PATH, "utf8")) as Country[];
-  }
-  console.log("Fetching countries from API...");
-  const countries = await fetchAllCountries();
-  mkdirSync(dirname(CACHE_PATH), { recursive: true });
-  writeFileSync(CACHE_PATH, JSON.stringify(countries));
-  return countries;
-}
+import { loadAllCountries } from "./all-countries";
 
 function formatIssues(issues: $ZodIssue[], base = ""): string[] {
   const lines: string[] = [];

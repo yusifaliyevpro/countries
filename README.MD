@@ -484,7 +484,7 @@ const { country } = await restCountries.getCountryByCode({
 This package exports TypeScript type definitions. Import them from the main entry or the `/types` subpath:
 
 ```typescript
-import type { Country, Region, Cca2Code } from "@yusifaliyevpro/countries/types";
+import type { Country, Region, Alpha_2Code } from "@yusifaliyevpro/countries/types";
 ```
 
 ## Available Types
@@ -498,7 +498,7 @@ import type { Country, Region, Cca2Code } from "@yusifaliyevpro/countries/types"
 - **`CountryPicker`**: Picks the requested top-level fields from `Country`.
 - **`CountryFilters`**: Typed, composable filters for `getCountries` / `search`.
 - **`RestCountriesConfig`**: Options for the `RestCountries` constructor.
-- **`Cca2Code` / `Cca3Code` / `Ccn3Code` / `CiocCode`**: Country codes (accept any string ✅).
+- **`Alpha_2Code` / `Alpha_3Code` / `Ccn3Code` / `CiocCode`**: Country codes (accept any string ✅).
 - **`Capital`**: Capital city names (accept any string ✅).
 - **`Region`**: World regions (e.g., "Africa", "Americas").
 - **`Subregion`**: World subregions (accept any string ✅).

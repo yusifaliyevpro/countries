@@ -1,4 +1,4 @@
-export const ccn3Codes = [
+export const CCN3_CODES = [
   "004",
   "008",
   "010",
