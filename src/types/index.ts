@@ -20,6 +20,7 @@ const dayMonth = z.strictObject({ day: z.number(), month: z.number() });
  * The v5 API serialises an **empty** map as `[]` (an empty array) instead of
  * `{}`. So every map-valued field is modelled as `Record<…> | []` to stay
  * faithful to the raw response — guard with `Array.isArray(value)` before use.
+ * This will be fixed in future by API maintainers
  */
 const emptyMap = z.array(z.never());
 const mapOrEmpty = <V extends z.ZodMiniType>(value: V) => z.union([z.record(z.string(), value), emptyMap]);
