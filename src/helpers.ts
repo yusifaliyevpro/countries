@@ -43,18 +43,34 @@ export function errorFromResponse(response: Response, body: RawEnvelope<unknown>
 
   let summary: string;
   switch (response.status) {
+    case 400:
+      summary = "bad request — a query parameter failed validation (e.g. empty `q`, or `limit` outside 1–100)";
+      break;
     case 401:
+      summary = "unauthorized — the `apiKey` is missing, unrecognized, revoked, or expired";
+      break;
     case 403:
       summary =
-        "authentication failed — check that your `apiKey` is valid, active, and (for browsers) that the request origin is allowed";
+        "forbidden — the account is frozen (e.g. monthly request limit reached) or a premium field was requested on a Free plan";
+      break;
+    case 404:
+      summary = serverMessages.length
+        ? "not found — unknown endpoint, or the property isn't readable/searchable"
+        : NOT_FOUND_MESSAGE;
+      break;
+    case 405:
+      summary = "method not allowed — REST Countries endpoints are GET-only";
+      break;
+    case 410:
+      summary = "this REST Countries API version is no longer active — update this package";
       break;
     case 429: {
       const retryAfter = response.headers.get("retry-after");
       summary = `rate limit exceeded${retryAfter ? ` — retry after ${retryAfter}s` : " — slow down or upgrade your plan"}`;
       break;
     }
-    case 404:
-      summary = serverMessages.length ? "not found" : NOT_FOUND_MESSAGE;
+    case 500:
+      summary = "REST Countries server error — try again later";
       break;
     default:
       summary = response.ok ? "unexpected response shape" : "request failed";
