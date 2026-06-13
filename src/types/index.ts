@@ -5,7 +5,7 @@ import type { ALPHA_3_CODES } from "../data/alpha_3";
 import type { CCN3_CODES } from "../data/ccn3";
 import type { CIOC_CODES } from "../data/cioc";
 import type { CURRENCIES } from "../data/currencies";
-import type { LANGUAGES, SUPPORTED_LANGUAGES } from "../data/langs";
+import type { LANGUAGES, SUPPORTED_LANGUAGES } from "../data/languages";
 import { REGIONS } from "../data/regions";
 import { SUBREGIONS } from "../data/subregions";
 import type { LiteralUnion } from "./common";
