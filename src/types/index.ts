@@ -156,9 +156,7 @@ export const countrySchema = z.strictObject({
  *
  * Inferred from {@link countrySchema} — edit the schema to change this type.
  *
- * > **Note:** v5 restructured the entire schema from v2.x of this package
- * > (e.g. `name` → `names`, `cca2`/`cca3` → `codes.alpha_2`/`codes.alpha_3`,
- * > `capital: string[]` → `capitals: { name, coordinates, attributes }[]`).
+ * **Note:** v5 restructured the entire schema from v2.x of this package. See [Migration Guide](https://github.com/yusifaliyevpro/countries/blob/main/MIGRATION.md)
  */
 export type Country = PrettifyDeep<
   Omit<z.infer<typeof countrySchema>, "subregion"> & {
