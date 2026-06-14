@@ -63,13 +63,17 @@ jobs:
         env:
           REST_COUNTRIES_API_KEY: ${{ secrets.REST_COUNTRIES_API_KEY }}
 
+      - name: React 👍 once tests finish
+        if: always() && github.event_name == 'issue_comment'
+        run: gh api "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content='+1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Report success
         if: github.event_name == 'issue_comment' && steps.tests.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content='+1'
-          gh pr comment "${{ github.event.issue.number }}" --body "✅ All tests passed"
+        run: gh pr comment "${{ github.event.issue.number }}" --body "✅ All tests passed"
 
       - name: Report failure
         if: github.event_name == 'issue_comment' && steps.tests.outcome == 'failure'
