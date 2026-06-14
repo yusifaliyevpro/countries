@@ -3,9 +3,10 @@ import type { Config } from "jest";
 const config: Config = {
   preset: "ts-jest",
   testEnvironment: "node",
-  // Cap parallel workers so concurrent API calls stay under the REST Countries
-  // edge rate limit (Cloudflare rejects sustained traffic above 20 requests/second).
-  maxWorkers: 1,
+  // Cap workers to minimize request bursts; the test client also retries 429s
+  // (tests/client.ts), and testTimeout gives that backoff room.
+  maxWorkers: 5,
+  testTimeout: 30_000,
   setupFiles: ["<rootDir>/tests/setup.ts"],
   testPathIgnorePatterns: ["<rootDir>/tests/client.ts", "<rootDir>/tests/setup.ts"],
   moduleNameMapper: {
