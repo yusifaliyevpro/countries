@@ -1,5 +1,7 @@
 # REST Countries Typed API Package 🇦🇿 🇵🇪
 
+<!-- Testing -->
+
 This package provides an easy and `TYPE-SAFE` way to interact with the [REST Countries API](https://restcountries.com/), which offers detailed information about countries worldwide. You can fetch country data using various parameters like alpha-2/alpha-3/CIOC/CCN3 codes, capital cities, languages, regions, subregions, translations, demonyms and currencies. `Thanks to Alejandro Matos for this API.`
 
 > ⚠️ **You are reading the v5 documentation.** v5 is a breaking, ground-up rewrite for REST Countries v5 (which shut down v1–v4). It now **requires an API key** and has a **new schema, class API, and pagination**. Coming from v2.x? Read the **[Migration guide](MIGRATION.md)**.
