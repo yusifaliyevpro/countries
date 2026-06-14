@@ -1,4 +1,4 @@
-# REST Countries Type-Safe Node SDK 🇦🇿 🇵🇪
+# REST Countries Type-Safe Node SDK 🇦🇿 🇨🇦
 
 This package provides an easy and `TYPE-SAFE` way to interact with the [REST Countries API](https://restcountries.com/), which offers detailed information about countries worldwide. You can fetch country data using various parameters like alpha-2/alpha-3/CIOC/CCN3 codes, capital cities, languages, regions, subregions, translations, demonyms and currencies.
 
