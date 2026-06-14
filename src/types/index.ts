@@ -13,17 +13,9 @@ import type { LiteralUnion } from "./common";
 import { PrettifyDeep } from "./helpers";
 
 const localizedName = z.strictObject({ common: z.string(), official: z.string() });
+type LocalizedName = z.infer<typeof localizedName>;
 const coordinates = z.strictObject({ lat: z.number(), lng: z.number() });
 const dayMonth = z.strictObject({ day: z.number(), month: z.number() });
-
-/**
- * The v5 API serialises an **empty** map as `[]` (an empty array) instead of
- * `{}`. So every map-valued field is modelled as `Record<…> | []` to stay
- * faithful to the raw response — guard with `Array.isArray(value)` before use.
- * This will be fixed in future by API maintainers
- */
-const emptyMap = z.array(z.never());
-const mapOrEmpty = <V extends z.ZodMiniType>(value: V) => z.union([z.record(z.string(), value), emptyMap]);
 
 /**
  * Runtime schema for a country as returned by the REST Countries **v5** API,
@@ -38,8 +30,8 @@ export const countrySchema = z.strictObject({
     common: z.string(),
     official: z.string(),
     alternates: z.array(z.string()),
-    native: mapOrEmpty(localizedName),
-    translations: mapOrEmpty(localizedName),
+    native: z.record(z.string(), localizedName),
+    translations: z.record(z.string(), localizedName),
   }),
   codes: z.strictObject({
     alpha_2: z.string(),
@@ -90,12 +82,7 @@ export const countrySchema = z.strictObject({
   }),
   continents: z.array(z.string()),
   coordinates,
-  // Usually an array of `{ code, name, symbol }`. A few entities (e.g. Somaliland)
-  // still return the old v4 record shape `{ [code]: { name, symbol } }`.
-  currencies: z.union([
-    z.array(z.strictObject({ code: z.string(), name: z.string(), symbol: z.string() })),
-    z.record(z.string(), z.strictObject({ name: z.string(), symbol: z.string() })),
-  ]),
+  currencies: z.array(z.strictObject({ code: z.string(), name: z.string(), symbol: z.string() })),
   date: z.strictObject({
     academic_year_start: dayMonth,
     fiscal_year_start: z.strictObject({
@@ -105,8 +92,8 @@ export const countrySchema = z.strictObject({
     }),
     start_of_week: z.string(),
   }),
-  demonyms: mapOrEmpty(z.strictObject({ f: z.string(), m: z.string() })),
-  economy: z.strictObject({ gini_coefficient: mapOrEmpty(z.number()) }),
+  demonyms: z.record(z.string(), z.strictObject({ f: z.string(), m: z.string() })),
+  economy: z.strictObject({ gini_coefficient: z.record(z.string(), z.number()) }),
   government_type: z.string(),
   landlocked: z.boolean(),
   languages: z.array(
@@ -121,7 +108,26 @@ export const countrySchema = z.strictObject({
     }),
   ),
   /** Only populated on paid REST Countries plans; otherwise an upgrade notice. */
-  leaders: z.array(z.strictObject({ message: z.string(), sample: z.string() })),
+  leaders: z.union([
+    z.array(z.strictObject({ message: z.string(), sample: z.string() })),
+    z.array(
+      z.strictObject({
+        assets: z.array(z.string()),
+        attributes: z.strictObject({
+          administers_executive: z.union([z.boolean(), z.null()]),
+          de_facto_executive: z.union([z.boolean(), z.null()]),
+          head_of_government: z.union([z.boolean(), z.null()]),
+          head_of_state: z.union([z.boolean(), z.null()]),
+          is_representative: z.union([z.boolean(), z.null()]),
+          pending_office: z.union([z.boolean(), z.null()]),
+          provisional: z.union([z.boolean(), z.null()]),
+        }),
+        links: z.strictObject({ wikipedia: z.union([z.string(), z.null()]) }),
+        name: z.string(),
+        title: z.string(),
+      }),
+    ),
+  ]),
   links: z.strictObject({
     google_maps: z.string(),
     official: z.string(),
@@ -161,7 +167,7 @@ export const countrySchema = z.strictObject({
  * **Note:** v5 restructured the entire schema from v2.x of this package. See [Migration Guide](https://github.com/yusifaliyevpro/countries/blob/main/MIGRATION.md)
  */
 export type Country = PrettifyDeep<
-  Omit<z.infer<typeof countrySchema>, "subregion"> & {
+  Omit<z.infer<typeof countrySchema>, "subregion" | "names"> & {
     /**
      * A known subregion or `""`. Typed as {@link Subregion} (a `LiteralUnion`) so
      * IDEs autocomplete the known values while still accepting any string — e.g.
@@ -170,6 +176,15 @@ export type Country = PrettifyDeep<
      * the conformance test.
      */
     subregion: Subregion;
+    names: Omit<z.infer<typeof countrySchema>["names"], "translations"> & {
+      /**
+       * Translation keys autocomplete to the known {@link SupportedTranslationKey}
+       * codes while still accepting any string (`LiteralUnion`), so
+       * `names.translations["tur"]` is suggested in the IDE — and new languages the
+       * API may add later still type-check. The runtime schema stays a loose record.
+       */
+      translations: Partial<Record<LiteralUnion<SupportedTranslationKey>, LocalizedName>>;
+    };
   }
 >;
 

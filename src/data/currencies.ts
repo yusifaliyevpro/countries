@@ -22,7 +22,6 @@ export const CURRENCIES = [
   "Brazilian real",
   "British pound",
   "Brunei dollar",
-  "Bulgarian lev",
   "Burmese kyat",
   "Burundian franc",
   "Cambodian riel",
