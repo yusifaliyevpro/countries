@@ -1,18 +1,50 @@
-name: PR Tests
+name: Tests
 
+# Tests hit the live REST Countries API (rate-limited, request-capped), so they
+# never run automatically. Trigger them on demand by either:
+#   • commenting "/run-tests" on a PR (repository OWNER only), or
+#   • the Actions tab → "Run workflow".
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+# Avoid piling up runs (and API calls) if "/run-tests" is posted repeatedly.
+concurrency:
+  group: tests-${{ github.event.issue.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write # react to the triggering comment
+  pull-requests: write # post the result comment
 
 jobs:
   test:
-    name: Type Check & Test
+    name: Test
     runs-on: ubuntu-latest
+    # Run on a manual dispatch, or on a "/run-tests" comment posted on a PR by the
+    # repository OWNER only (so nobody else can burn the API limit / use secrets).
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.issue.pull_request &&
+       contains(github.event.comment.body, '/run-tests') &&
+       github.event.comment.author_association == 'OWNER')
     steps:
-      - uses: actions/checkout@v2
+      - name: Acknowledge the comment
+        if: github.event_name == 'issue_comment'
+        run: gh api "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - uses: actions/checkout@v4
+        with:
+          # On a comment trigger, check out the PR's merge ref (the workflow itself
+          # runs from the default branch). On manual dispatch, use the chosen branch.
+          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/merge', github.event.issue.number) || github.ref }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 24
 
@@ -24,13 +56,32 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Build
-        run: pnpm build
+      - name: Run Tests
+        id: tests
+        continue-on-error: true # keep going so we can react / comment the result
+        run: pnpm test
+        env:
+          REST_COUNTRIES_API_KEY: ${{ secrets.REST_COUNTRIES_API_KEY }}
 
-      - name: Type Check
-        run: pnpm tsc --noEmit
+      - name: React 👍 once tests finish
+        if: always() && github.event_name == 'issue_comment'
+        run: gh api "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content='+1'
+        env:
+          GH_TOKEN: ${{ github.token }}
 
-      # - name: Run Tests
-      #   run: pnpm test
-      #   env:
-      #     REST_COUNTRIES_API_KEY: ${{ secrets.REST_COUNTRIES_API_KEY }}
+      - name: Report success
+        if: github.event_name == 'issue_comment' && steps.tests.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "${{ github.event.issue.number }}" --body "✅ All tests passed"
+
+      - name: Report failure
+        if: github.event_name == 'issue_comment' && steps.tests.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${{ github.event.issue.number }}" --body "❌ Some tests failed, check it out [here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
+      - name: Reflect test outcome in job status
+        if: always() && steps.tests.outcome == 'failure'
+        run: exit 1

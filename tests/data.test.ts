@@ -37,15 +37,10 @@ beforeAll(async () => {
     add(actual.CCN3_CODES, c.codes.ccn3);
     add(actual.CIOC_CODES, c.codes.cioc);
     for (const capital of c.capitals) add(actual.CAPITALS, capital.name);
-    // currencies is usually an array, but a few entities use the old record shape.
-    const currencyList = Array.isArray(c.currencies) ? c.currencies : Object.values(c.currencies);
-    for (const currency of currencyList) add(actual.CURRENCIES, currency.name);
+    for (const currency of c.currencies) add(actual.CURRENCIES, currency.name);
     for (const language of c.languages) add(actual.LANGUAGES, language.name);
-    // SUPPORTED_LANGUAGES are the language codes used as keys of `names.translations`
-    // (an empty `[]` for entities with no translations — skip those).
-    if (!Array.isArray(c.names.translations)) {
-      for (const code of Object.keys(c.names.translations)) add(actual.SUPPORTED_TRANSLATION_KEYS, code);
-    }
+    // SUPPORTED_TRANSLATION_KEYS are the language codes used as keys of `names.translations`.
+    for (const code of Object.keys(c.names.translations)) add(actual.SUPPORTED_TRANSLATION_KEYS, code);
     add(actual.REGIONS, c.region);
     add(actual.SUBREGIONS, c.subregion);
   }
