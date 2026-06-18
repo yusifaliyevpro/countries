@@ -57,6 +57,14 @@ export const countrySchema = z.strictObject({
     }),
   ),
   flag: z.strictObject({
+    colors: z.strictObject({
+      /** Dominant flag color as a hex string. `""` for countries without a flag. */
+      dominant: z.string(),
+      /** Flag color palette as hex strings. `[]` for countries without a flag. */
+      palette: z.array(z.string()),
+      /** Semantic color swatches as a role-to-hex map. `{}` for countries without a flag. */
+      swatches: z.record(z.string(), z.string()),
+    }),
     description: z.string(),
     emoji: z.string(),
     html_entity: z.string(),
