@@ -436,7 +436,7 @@ The `fields` parameter selects **top-level** properties of `Country` and gives a
 - `names`: common, official, alternates, native and translations
 - `codes`: alpha_2, alpha_3, ccn3, cioc, fifa, fips, gec
 - `capitals`: array of `{ name, coordinates, attributes }`
-- `flag`: description, emoji, html_entity, unicode, url_png, url_svg, colors (`{ dominant, palette, swatches }`)
+- `flag`: description, emoji, html_entity, unicode, url_png, url_svg, colors (`{ dominant, prominent, palette, swatches }`)
 - `region`, `subregion`
 - `area`: `{ kilometers, miles }`
 - `borders`, `calling_codes`, `continents`, `timezones`, `tlds`, `assets`

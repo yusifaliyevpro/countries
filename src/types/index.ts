@@ -60,10 +60,19 @@ export const countrySchema = z.strictObject({
     colors: z.strictObject({
       /** Dominant flag color as a hex string. `""` for countries without a flag. */
       dominant: z.string(),
-      /** Flag color palette as hex strings. `[]` for countries without a flag. */
-      palette: z.array(z.string()),
-      /** Semantic color swatches as a role-to-hex map. `{}` for countries without a flag. */
-      swatches: z.record(z.string(), z.string()),
+      /** Most prominent flag color (largest share of the flag's area) as a hex string. */
+      prominent: z.string(),
+      /** Palette of `{ hex, proportion }`, pairing each color with its 0–1 area share. `[]` for countries without a flag. */
+      palette: z.array(z.strictObject({ hex: z.string(), proportion: z.number() })),
+      /** Semantic color swatches by role; all six are always present, `null` when the flag has no matching color. */
+      swatches: z.strictObject({
+        vibrant: z.union([z.string(), z.null()]),
+        muted: z.union([z.string(), z.null()]),
+        dark_vibrant: z.union([z.string(), z.null()]),
+        dark_muted: z.union([z.string(), z.null()]),
+        light_vibrant: z.union([z.string(), z.null()]),
+        light_muted: z.union([z.string(), z.null()]),
+      }),
     }),
     description: z.string(),
     emoji: z.string(),
