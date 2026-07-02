@@ -129,7 +129,10 @@ export const countrySchema = z.strictObject({
     z.array(z.strictObject({ message: z.string(), sample: z.string() })),
     z.array(
       z.strictObject({
-        assets: z.array(z.string()),
+        uuid: z.union([z.string(), z.null()]),
+        name: z.string(),
+        title: z.string(),
+        links: z.strictObject({ wikipedia: z.union([z.string(), z.null()]) }),
         attributes: z.strictObject({
           administers_executive: z.union([z.boolean(), z.null()]),
           de_facto_executive: z.union([z.boolean(), z.null()]),
@@ -139,9 +142,27 @@ export const countrySchema = z.strictObject({
           pending_office: z.union([z.boolean(), z.null()]),
           provisional: z.union([z.boolean(), z.null()]),
         }),
-        links: z.strictObject({ wikipedia: z.union([z.string(), z.null()]) }),
-        name: z.string(),
-        title: z.string(),
+        // `assets` is `{}` when the leader has no assets, otherwise a single
+        // `wikipedia.article.open_graph_image` entry — so the key is optional.
+        assets: z.strictObject({
+          "wikipedia.article.open_graph_image": z.optional(
+            z.strictObject({
+              renditions: z.array(
+                z.strictObject({
+                  content_hash: z.string(),
+                  content_type: z.string(),
+                  filesize: z.number(),
+                  height: z.number(),
+                  max_edge: z.number(),
+                  url: z.string(),
+                  width: z.number(),
+                }),
+              ),
+              source: z.string(),
+              type: z.string(),
+            }),
+          ),
+        }),
       }),
     ),
   ]),
@@ -166,6 +187,10 @@ export const countrySchema = z.strictObject({
     opec: z.boolean(),
     schengen: z.boolean(),
     un: z.boolean(),
+  }),
+  units: z.strictObject({
+    measurement_system: z.literal(["metric", "imperial"]),
+    temperature_scale: z.literal(["Celsius", "Fahrenheit"]),
   }),
   number_format: z.strictObject({ decimal_separator: z.string(), thousands_separator: z.string() }),
   parent: z.strictObject({ alpha_2: z.string(), alpha_3: z.string() }),

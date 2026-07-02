@@ -2,19 +2,46 @@ import { countrySchema } from "@yusifaliyevpro/countries";
 import { $ZodIssue } from "zod/v4/core";
 import { loadAllCountries } from "./all-countries";
 
-function formatIssues(issues: $ZodIssue[], base = ""): string[] {
+/** Resolve the value that actually lives at `path` inside the parsed country. */
+function valueAtPath(root: unknown, path: PropertyKey[]): unknown {
+  return path.reduce<unknown>((acc, key) => (acc == null ? undefined : (acc as Record<PropertyKey, unknown>)[key]), root);
+}
+
+/** A short, human-readable preview of a received value — its shape, not its full contents. */
+function preview(value: unknown): string {
+  if (value === undefined) return "missing";
+  if (value === null) return "null";
+  if (Array.isArray(value)) {
+    const sample = value.length ? preview(value[0]) : "";
+    return `array(${value.length})${value.length ? ` of ${sample}` : ""}`;
+  }
+  if (typeof value === "object") return `object{ ${Object.keys(value as object).join(", ")} }`;
+  if (typeof value === "string") return `string ${JSON.stringify(value.length > 40 ? `${value.slice(0, 40)}…` : value)}`;
+  return `${typeof value}(${String(value)})`;
+}
+
+/**
+ * Turn Zod issues into an indented, readable tree. Each line shows the path,
+ * what the schema wanted, and — crucially — what the API actually sent.
+ */
+function formatIssues(root: unknown, issues: $ZodIssue[], indent = "  "): string[] {
   const lines: string[] = [];
   for (const issue of issues) {
-    const path = [base, ...issue.path.map(String)].filter(Boolean).join(".") || "(root)";
+    const path = issue.path.map(String).join(".") || "(root)";
+    const got = preview(valueAtPath(root, issue.path));
+
     if (issue.code === "unrecognized_keys") {
-      lines.push(`${path}: unexpected key(s) not in schema: ${(issue.keys ?? []).join(", ")}`);
-    } else if (issue.code === "invalid_union" && issue.errors) {
-      const branches = issue.errors.map((branch) => formatIssues(branch, path).join(" & "));
-      lines.push(`${path}: matched no union branch [${branches.join(" | ")}]`);
+      lines.push(`${indent}${path}: extra key(s) the schema doesn't allow → ${(issue.keys ?? []).join(", ")}`);
     } else if (issue.code === "invalid_type") {
-      lines.push(`${path}: expected ${issue.expected ?? "?"} (${issue.message})`);
+      lines.push(`${indent}${path}: expected ${issue.expected ?? "?"}, got ${got}`);
+    } else if (issue.code === "invalid_union" && issue.errors) {
+      lines.push(`${indent}${path}: value matched none of the ${issue.errors.length} allowed shapes — got ${got}`);
+      issue.errors.forEach((branch, i) => {
+        lines.push(`${indent}  option ${i + 1} wanted:`);
+        lines.push(...formatIssues(root, branch, `${indent}    `));
+      });
     } else {
-      lines.push(`${path}: ${issue.message} (${issue.code})`);
+      lines.push(`${indent}${path}: ${issue.message} (${issue.code}) — got ${got}`);
     }
   }
   return lines;
@@ -33,11 +60,11 @@ test("every country in the API conforms to the Country schema", async () => {
     const result = countrySchema.safeParse(country);
     if (!result.success) {
       const name = country.names?.common ?? country.codes?.alpha_3 ?? "unknown";
-      failures.push(`${name}: ${formatIssues(result.error.issues).join("; ")}`);
+      failures.push([name, ...formatIssues(country, result.error.issues)].join("\n"));
     }
   }
 
   if (failures.length) {
-    throw new Error(`${failures.length}/${countries.length} countries failed schema validation:\n${failures.join("\n")}`);
+    throw new Error(`${failures.length}/${countries.length} countries failed schema validation:\n\n${failures.join("\n\n")}`);
   }
 }, 30_000);
