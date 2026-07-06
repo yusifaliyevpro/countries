@@ -50,7 +50,7 @@ export type CurrencyConvertResult =
  * table is flattened onto the result, so read `base`, `as_of`, and `rates`.
  */
 export type CurrencyRatesResult =
-  | { success: true; base: CurrencyCode; as_of: string; rates: Record<string, number>; error: undefined }
+  | { success: true; base: CurrencyCode; as_of: string; rates: Record<CurrencyCode, number>; error: undefined }
   | { success: false; base: undefined; as_of: undefined; rates: undefined; error: Error };
 
 /** Discriminated result of {@link RestCountries.getCurrencies} (the supported-currency catalog). */
