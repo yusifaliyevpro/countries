@@ -1,5 +1,13 @@
-import { API_BASE_URL } from "./constants";
-import { countryFailure, errorFromResponse, countryListFailure, NOT_FOUND_MESSAGE, ok, type RawEnvelope } from "./helpers";
+import { API_BASE_URL, CURRENCIES_BASE_URL } from "./constants";
+import {
+  countryFailure,
+  errorFromResponse,
+  countryListFailure,
+  failure,
+  NOT_FOUND_MESSAGE,
+  ok,
+  type RawEnvelope,
+} from "./helpers";
 import type {
   Capital,
   Alpha_2Code,
@@ -10,7 +18,14 @@ import type {
   CountryListResult,
   CountryPicker,
   CountryResult,
+  CurrenciesResult,
   Currency,
+  CurrencyCode,
+  CurrencyConversion,
+  CurrencyConvertResult,
+  CurrencyName,
+  CurrencyRates,
+  CurrencyRatesResult,
   Language,
   Region,
   Subregion,
@@ -27,6 +42,8 @@ export type RestCountriesConfig = {
   apiKey: string;
   /** Override the API base URL. Defaults to the v5 endpoint. */
   baseURL?: string;
+  /** Override the Currencies API base URL. Defaults to the currencies v1 endpoint. */
+  currenciesBaseURL?: string;
   /** Custom `fetch` implementation (e.g. for testing or a polyfill). */
   fetch?: typeof fetch;
 };
@@ -118,6 +135,7 @@ function appendFilters(search: URLSearchParams, filters: CountryFilters): void {
 export class RestCountries {
   readonly #apiKey: string;
   readonly #baseURL: string;
+  readonly #currenciesBaseURL: string;
   readonly #fetch: typeof fetch;
 
   constructor(config: RestCountriesConfig) {
@@ -127,6 +145,7 @@ export class RestCountries {
     }
     this.#apiKey = apiKey;
     this.#baseURL = config.baseURL ?? API_BASE_URL;
+    this.#currenciesBaseURL = config.currenciesBaseURL ?? CURRENCIES_BASE_URL;
     this.#fetch = config.fetch ?? globalThis.fetch;
   }
 
@@ -325,7 +344,7 @@ export class RestCountries {
    * const { countries } = await restCountries.getCountriesByCurrency({ currency: "EUR", fields: ["names"] });
    */
   async getCountriesByCurrency<T extends Fields>(
-    { currency, fields, omitFields, limit, offset }: { currency: Currency } & Selection<T> & Pagination,
+    { currency, fields, omitFields, limit, offset }: { currency: CurrencyName } & Selection<T> & Pagination,
     fetchOptions?: RequestInit,
   ): Promise<CountryListResult<T>> {
     return this.#request<T>("/currencies", { q: currency as string, fields, omitFields, limit, offset }, fetchOptions);
@@ -368,5 +387,89 @@ export class RestCountries {
     fetchOptions?: RequestInit,
   ): Promise<CountryResult<T>> {
     return this.#first<T>("/names.translations", { q: translation, fields, omitFields }, fetchOptions);
+  }
+
+  /**
+   * Performs a GET against the Currencies API and unwraps the `data.objects`
+   * envelope. Never throws — failures are returned as `{ success: false, error }`.
+   */
+  async #currencyRequest<C>(
+    path: string,
+    search: URLSearchParams,
+    fetchOptions?: RequestInit,
+  ): Promise<{ success: true; objects: C[] } | { success: false; error: Error }> {
+    try {
+      const url = new URL(this.#currenciesBaseURL.replace(/\/$/, "") + path);
+      search.forEach((value, key) => url.searchParams.set(key, value));
+
+      const response = await this.#fetch(url.toString(), {
+        ...fetchOptions,
+        headers: { Authorization: `Bearer ${this.#apiKey}`, ...fetchOptions?.headers },
+      });
+
+      const rawText = await response.text();
+      let body: RawEnvelope<C> | undefined;
+      try {
+        body = rawText ? (JSON.parse(rawText) as RawEnvelope<C>) : undefined;
+      } catch {
+        body = undefined;
+      }
+
+      if (!response.ok || !body?.data?.objects) {
+        return { success: false, error: errorFromResponse(response, body, rawText) };
+      }
+      return { success: true, objects: body.data.objects as C[] };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
+    }
+  }
+
+  /**
+   * Converts an amount from one currency into one or more targets (`amount` defaults to 1, `to` accepts up to 5 codes).
+   *
+   * @example
+   * const { conversions } = await restCountries.convertCurrency({ from: "USD", to: ["EUR", "GBP"], amount: 100 });
+   */
+  async convertCurrency(
+    { from, to, amount }: { from: CurrencyCode; to: CurrencyCode | CurrencyCode[]; amount?: number },
+    fetchOptions?: RequestInit,
+  ): Promise<CurrencyConvertResult> {
+    const targets = Array.isArray(to) ? to : [to];
+    const search = new URLSearchParams({ from, to: targets.join(",") });
+    if (amount !== undefined) search.set("amount", String(amount));
+
+    const result = await this.#currencyRequest<CurrencyConversion>("/convert", search, fetchOptions);
+    if (!result.success) return failure(result.error, "conversions");
+    return ok({ conversions: result.objects });
+  }
+
+  /**
+   * Fetches the full exchange-rate table for a base currency (units per one unit of the base).
+   *
+   * @example
+   * const { rates } = await restCountries.getCurrencyRates({ base: "USD" });
+   */
+  async getCurrencyRates({ base }: { base: CurrencyCode }, fetchOptions?: RequestInit): Promise<CurrencyRatesResult> {
+    const result = await this.#currencyRequest<CurrencyRates>(
+      `/rates/${encodeURIComponent(base)}`,
+      new URLSearchParams(),
+      fetchOptions,
+    );
+    if (!result.success) return failure(result.error, "base", "as_of", "rates");
+    const table = result.objects[0];
+    if (!table) return failure(new Error(NOT_FOUND_MESSAGE), "base", "as_of", "rates");
+    return ok(table);
+  }
+
+  /**
+   * Fetches the supported-currency catalog (one `{ code, name, symbol }` per currency, sorted by code).
+   *
+   * @example
+   * const { currencies } = await restCountries.getCurrencies();
+   */
+  async getCurrencies(fetchOptions?: RequestInit): Promise<CurrenciesResult> {
+    const result = await this.#currencyRequest<Currency>("/symbols", new URLSearchParams(), fetchOptions);
+    if (!result.success) return failure(result.error, "currencies");
+    return ok({ currencies: result.objects });
   }
 }

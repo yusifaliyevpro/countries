@@ -4,8 +4,21 @@ export { RestCountries } from "./client";
 export type { CountryCodeQuery, CountryFilters, RestCountriesConfig } from "./client";
 export { ok } from "./helpers";
 export type { ErrorCause } from "./helpers";
-export { countrySchema } from "./types";
-export type { Country, CountryListResult, CountryPicker, CountryResult, ResponseMeta } from "./types";
+export { countrySchema, currencySchema, currencyConversionSchema, currencyRatesSchema } from "./types";
+export type {
+  Country,
+  CountryListResult,
+  CountryPicker,
+  CountryResult,
+  CurrenciesResult,
+  Currency,
+  CurrencyCode,
+  CurrencyConversion,
+  CurrencyConvertResult,
+  CurrencyRates,
+  CurrencyRatesResult,
+  ResponseMeta,
+} from "./types";
 
 /**
  * Type-safe helper for declaring a `fields` array outside of a call site while

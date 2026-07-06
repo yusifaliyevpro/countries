@@ -21,13 +21,29 @@ export function ok<T extends object>(value: T): T & { success: true; error: unde
 }
 
 /** The failure branch of a `CountryListResult`. */
-export function countryListFailure(error: Error): { success: false; countries: undefined; meta: undefined; error: Error } {
+export function countryListFailure(error: Error): {
+  success: false;
+  countries: undefined;
+  meta: undefined;
+  error: Error;
+} {
   return { success: false, countries: undefined, meta: undefined, error };
 }
 
 /** The failure branch of a `CountryResult`. */
 export function countryFailure(error: Error): { success: false; country: undefined; error: Error } {
   return { success: false, country: undefined, error };
+}
+
+/**
+ * Generic failure branch for the currency results: `{ success: false, error }`
+ * plus each named data key set to `undefined`, so the discriminated union
+ * narrows correctly on `success` (e.g. `failure(err, "conversions")`).
+ */
+export function failure<K extends string>(error: Error, ...keys: K[]): { success: false; error: Error } & Record<K, undefined> {
+  const result: Record<string, unknown> = { success: false, error };
+  for (const key of keys) result[key] = undefined;
+  return result as { success: false; error: Error } & Record<K, undefined>;
 }
 
 /**
