@@ -37,6 +37,10 @@ function ask(question: string): Promise<boolean> {
 // ── Checks (same order as CI) ─────────────────────────────────────
 const checks: Check[] = [
   {
+    name: "TypeScript — type check",
+    cmd: "pnpm tsc --noEmit",
+  },
+  {
     name: "Prettier — format check",
     cmd: "pnpm prettier --check .",
     onFail: "pnpm prettier --write .",
@@ -44,10 +48,6 @@ const checks: Check[] = [
   {
     name: "tsdown — check for build errors",
     cmd: "pnpm build",
-  },
-  {
-    name: "TypeScript — type check",
-    cmd: "pnpm tsc --noEmit",
   },
 ];
 
