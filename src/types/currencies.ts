@@ -23,7 +23,7 @@ export const currencyConversionSchema = z.strictObject({
   amount: z.number(),
   rate: z.number(),
   result: z.number(),
-  as_of: z.iso.datetime(),
+  as_of: z.number(),
 });
 
 export type CurrencyConversion = z.infer<typeof currencyConversionSchema>;
@@ -31,7 +31,7 @@ export type CurrencyConversion = z.infer<typeof currencyConversionSchema>;
 /** Runtime schema for the exchange-rate table of a base currency (`rates` endpoint). */
 export const currencyRatesSchema = z.strictObject({
   base: z.string(),
-  as_of: z.iso.datetime(),
+  as_of: z.number(),
   rates: z.record(z.string(), z.number()),
 });
 
@@ -50,7 +50,7 @@ export type CurrencyConvertResult =
  * table is flattened onto the result, so read `base`, `as_of`, and `rates`.
  */
 export type CurrencyRatesResult =
-  | { success: true; base: CurrencyCode; as_of: string; rates: Record<CurrencyCode, number>; error: undefined }
+  | { success: true; base: CurrencyCode; as_of: number; rates: Record<CurrencyCode, number>; error: undefined }
   | { success: false; base: undefined; as_of: undefined; rates: undefined; error: Error };
 
 /** Discriminated result of {@link RestCountries.getCurrencies} (the supported-currency catalog). */

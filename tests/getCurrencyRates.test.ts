@@ -4,7 +4,7 @@ test("fetches the exchange-rate table for a base currency", async () => {
   const result = await rc.getCurrencyRates({ base: "USD" });
   if (!result.success) throw result.error;
   expect(result.base).toBe("USD");
-  expect(typeof result.as_of).toBe("string");
+  expect(typeof result.as_of).toBe("number");
   expect(typeof result.rates.EUR).toBe("number");
 });
 

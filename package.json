@@ -32,11 +32,12 @@
     "@types/node": "24.12.4",
     "dotenv": "17.4.2",
     "jest": "30.4.2",
-    "prettier": "3.9.4",
+    "prettier": "3.9.5",
     "ts-jest": "29.4.11",
     "ts-node": "10.9.2",
-    "tsdown": "0.22.4",
-    "typescript": "7.0.2",
+    "tsdown": "0.22.5",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "unplugin-unused": "^0.5.7"
   },
   "keywords": [
