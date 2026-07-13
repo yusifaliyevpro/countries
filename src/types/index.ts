@@ -5,6 +5,7 @@ import type { ALPHA_3_CODES } from "../data/alpha_3";
 import type { CCN3_CODES } from "../data/ccn3";
 import type { CIOC_CODES } from "../data/cioc";
 import type { CURRENCIES } from "../data/currencies";
+import type { CURRENCY_CODES } from "../data/currency_codes";
 import type { LANGUAGES } from "../data/languages";
 import type { SUPPORTED_TRANSLATION_KEYS } from "../data/translation_keys";
 import { REGIONS } from "../data/regions";
@@ -278,8 +279,7 @@ export type CountryListResult<T extends readonly (keyof Country)[]> =
  * country; // CountryPicker<T>  (no undefined)
  */
 export type CountryResult<T extends readonly (keyof Country)[]> =
-  | { success: true; country: CountryPicker<T>; error: undefined }
-  | { success: false; country: undefined; error: Error };
+  { success: true; country: CountryPicker<T>; error: undefined } | { success: false; country: undefined; error: Error };
 
 export type SupportedTranslationKey = (typeof SUPPORTED_TRANSLATION_KEYS)[number];
 export type Alpha_3Code = LiteralUnion<(typeof ALPHA_3_CODES)[number]>;
@@ -290,4 +290,17 @@ export type Ccn3Code = LiteralUnion<(typeof CCN3_CODES)[number]>;
 export type Region = (typeof REGIONS)[number];
 export type Subregion = LiteralUnion<(typeof SUBREGIONS)[number]>;
 export type Language = LiteralUnion<(typeof LANGUAGES)[number]>;
-export type Currency = LiteralUnion<(typeof CURRENCIES)[number]>;
+export type CurrencyName = LiteralUnion<(typeof CURRENCIES)[number]>;
+export type CurrencyCode = LiteralUnion<(typeof CURRENCY_CODES)[number]>;
+
+export {
+  currencySchema,
+  currencyConversionSchema,
+  currencyRatesSchema,
+  type Currency,
+  type CurrencyConversion,
+  type CurrencyRates,
+  type CurrencyConvertResult,
+  type CurrencyRatesResult,
+  type CurrenciesResult,
+} from "./currencies";

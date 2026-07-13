@@ -93,6 +93,11 @@ On failure (network error, auth failure, or not-found) you get `{ success: false
 | [`getCountryByCapital`](#getcountrybycapital)         | single  |
 | [`getCountryByTranslation`](#getcountrybytranslation) | single  |
 | [`getCountryByDemonym`](#getcountrybydemonym)         | single  |
+| [`convertCurrency`](#convertcurrency)                 | list    |
+| [`getCurrencyRates`](#getcurrencyrates)               | single  |
+| [`getCurrencies`](#getcurrencies)                     | list    |
+
+The last three call the separate [Currencies API](https://restcountries.com/docs) (exchange rates & conversion), not the country dataset.
 
 Additional information:
 
@@ -367,6 +372,62 @@ const { country: peru } = await restCountries.getCountryByDemonym({
 
 ---
 
+### `convertCurrency`
+
+Converts an amount from one currency into one or more targets, via the [Currencies API](https://restcountries.com/docs). Both fiat and crypto codes are supported and are case-insensitive. Returns one [`CurrencyConversion`](#available-types) per target under `conversions`.
+
+#### Parameters:
+
+- `from`: Source currency code (e.g. `"USD"`).
+- `to`: A single target code, or an array of up to 5 (e.g. `["EUR", "GBP"]`).
+- `amount` (optional): Amount to convert. Defaults to `1` (returns the unit rate).
+
+#### Example:
+
+```typescript
+const { success, conversions, error } = await restCountries.convertCurrency({
+  from: "USD",
+  to: ["EUR", "GBP", "CAD"],
+  amount: 100,
+});
+if (!success) throw error;
+console.log(conversions[0].result); // 87.72645
+```
+
+---
+
+### `getCurrencyRates`
+
+Fetches the full exchange-rate table for a base currency (units per one unit of the base). The single table is flattened onto the result, so you read `base`, `as_of`, and the `rates` map directly.
+
+#### Parameters:
+
+- `base`: Base currency code the table is expressed against (e.g. `"USD"`).
+
+#### Example:
+
+```typescript
+const { success, base, rates, error } = await restCountries.getCurrencyRates({ base: "USD" });
+if (!success) throw error;
+console.log(rates["EUR"]); // 0.8772645
+```
+
+---
+
+### `getCurrencies`
+
+Fetches the supported-currency catalog — one [`Currency`](#available-types) (`code`, `name`, `symbol`) per currency, sorted by code. `symbol` is `null` where the currency has no conventional sign (e.g. gold, `"XAU"`). Every code listed here is usable as a `from`, `to`, or `base`.
+
+#### Example:
+
+```typescript
+const { success, currencies, error } = await restCountries.getCurrencies();
+if (!success) throw error;
+console.log(currencies.map((c) => c.code));
+```
+
+---
+
 ## Filtering
 
 `getCountries` and `search` accept a typed `filters` object (`CountryFilters`). Every provided filter is **AND-combined**, so you can compose them freely:
@@ -503,8 +564,17 @@ import type { Country, Region, Alpha_2Code } from "@yusifaliyevpro/countries/typ
 - **`Region`**: World regions (e.g., "Africa", "Americas").
 - **`Subregion`**: World subregions (accept any string ✅).
 - **`Lang`**: Language names (accept any string ✅).
-- **`Currency`**: Currency codes (accept any string ✅).
+- **`CurrencyName`**: A country's currency name/code, for `getCountriesByCurrency` (accept any string ✅).
 - **`SupportedLanguages`**: Languages supported for translations.
+
+### Currencies API types
+
+- **`Currency`**: A currency object from the Currencies API — `{ code; name; symbol: string | null }`.
+- **`CurrencyCode`**: A currency code for `convertCurrency` / `getCurrencyRates` — autocompletes supported fiat & crypto codes (accepts any string ✅).
+- **`CurrencyConversion`**: A single conversion result — `{ from; to; amount; rate; result; as_of }`.
+- **`CurrencyRates`**: A base currency's rate table — `{ base; as_of; rates }`.
+- **`CurrencyConvertResult`** / **`CurrencyRatesResult`** / **`CurrenciesResult`**: Discriminated results of `convertCurrency` / `getCurrencyRates` / `getCurrencies`.
+- **`currencySchema`** / **`currencyConversionSchema`** / **`currencyRatesSchema`**: Zod schemas backing the types above (exported from the main entry for runtime validation).
 
 ---
 
