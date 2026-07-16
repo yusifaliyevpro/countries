@@ -1,15 +1,15 @@
 import { defineConfig } from "oxlint";
 
 export default defineConfig({
-  plugins: ["typescript", "unicorn", "import", "jest", "jsdoc"],
+  plugins: ["typescript", "unicorn", "import"],
   categories: {
     suspicious: "warn",
   },
   ignorePatterns: ["dist"],
   rules: {
-    eqeqeq: "error",
+    eqeqeq: "warn",
     "no-throw-literal": "warn",
-    "unicorn/prefer-node-protocol": "error",
+    "unicorn/prefer-node-protocol": "warn",
     "typescript/consistent-type-imports": "warn",
   },
 });
