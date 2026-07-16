@@ -27,6 +27,5 @@ test("fetches a country by cioc code", async () => {
 
 test("fails for an unknown code", async () => {
   const result = await rc.getCountryByCode({ alpha_3: "ZZZ", fields: ["names"] });
-  expect(result.success).toBe(false);
-  if (!result.success) expect(result.error).toBeInstanceOf(Error);
+  expect(result).toMatchObject({ success: false, error: expect.any(Error) });
 });

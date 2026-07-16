@@ -3,8 +3,8 @@
 // Run this before opening a PR:
 //   pnpm checks
 //
-import { execSync } from "child_process";
-import * as readline from "readline";
+import { execSync } from "node:child_process";
+import * as readline from "node:readline";
 
 interface Check {
   name: string;
@@ -41,9 +41,13 @@ const checks: Check[] = [
     cmd: "pnpm tsc --noEmit",
   },
   {
-    name: "Prettier — format check",
-    cmd: "pnpm prettier --check .",
-    onFail: "pnpm prettier --write .",
+    name: "Oxfmt — format check",
+    cmd: "pnpm fmt:check",
+    onFail: "pnpm fmt",
+  },
+  {
+    name: "Oxlint — linting",
+    cmd: "pnpm lint",
   },
   {
     name: "tsdown — check for build errors",

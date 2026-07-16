@@ -33,6 +33,5 @@ test("treats codes case-insensitively", async () => {
 
 test("fails for an unknown source currency", async () => {
   const result = await rc.convertCurrency({ from: "ZZZ", to: "EUR" });
-  expect(result.success).toBe(false);
-  if (!result.success) expect(result.error).toBeInstanceOf(Error);
+  expect(result).toMatchObject({ success: false, error: expect.any(Error) });
 });

@@ -8,11 +8,11 @@ test("CURRENCY_CODES is in sync with the live symbols catalog", async () => {
   const present = new Set(result.currencies.map((c) => c.code));
   const listed = new Set<string>(CURRENCY_CODES);
 
-  const missing = [...present].filter((code) => !listed.has(code)).sort();
-  const stale = [...listed].filter((code) => !present.has(code)).sort();
+  const missing = [...present].filter((code) => !listed.has(code)).toSorted();
+  const stale = [...listed].filter((code) => !present.has(code)).toSorted();
 
   const problems: string[] = [];
   if (missing.length) problems.push(`MISSING from src/data/currency_codes.ts: ${missing.join(", ")}`);
   if (stale.length) problems.push(`STALE in src/data/currency_codes.ts: ${stale.join(", ")}`);
-  if (problems.length) throw new Error(`CURRENCY_CODES is out of sync:\n${problems.join("\n")}`);
+  expect(problems).toEqual([]);
 });

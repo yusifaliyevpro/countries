@@ -10,6 +10,5 @@ test("fetches the exchange-rate table for a base currency", async () => {
 
 test("fails for an unknown base currency", async () => {
   const result = await rc.getCurrencyRates({ base: "ZZZ" });
-  expect(result.success).toBe(false);
-  if (!result.success) expect(result.error).toBeInstanceOf(Error);
+  expect(result).toMatchObject({ success: false, error: expect.any(Error) });
 });
