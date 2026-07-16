@@ -12,7 +12,7 @@ async function fetchAllCountries(): Promise<Country[]> {
   const all: Country[] = [];
   let offset = 0;
   for (;;) {
-    const page = await rc.getCountries({ limit: 100, offset });
+    const page = await rc.getCountries({ limit: 300, offset });
     if (!page.success) throw page.error;
     all.push(...page.countries);
     if (!page.meta.more) break;

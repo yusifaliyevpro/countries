@@ -66,7 +66,7 @@ Every method resolves to a **discriminated result** — never `null`. Destructur
 const { success, countries, meta, error } = await restCountries.getCountriesByLang({
   lang: "Spanish",
   fields: ["names", "languages"],
-  limit: 100,
+  limit: 100, // Paid plans have an upper limit of 500, though there are only 254 countries currently.
 });
 if (!success) throw error; // narrow once…
 countries; // …now CountryPicker<T>[]  (not undefined)
@@ -458,7 +458,7 @@ REST Countries v5 paginates results (default 25 per page, max 100). List methods
 const result = await restCountries.getCountriesByRegion({
   region: "Africa",
   fields: ["names"],
-  limit: 100,
+  limit: 60,
   offset: 0,
 });
 if (!result.success) throw result.error;
@@ -468,7 +468,7 @@ if (result.meta.more) {
   const next = await restCountries.getCountriesByRegion({
     region: "Africa",
     fields: ["names"],
-    limit: 100,
+    limit: 60,
     offset: result.meta.offset + result.meta.limit,
   });
 }

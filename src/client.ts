@@ -97,7 +97,7 @@ type Selection<T extends Fields> = {
 
 /** Pagination options shared by every list endpoint. */
 type Pagination = {
-  /** Max results per request (1–100). The API defaults to 25. */
+  /** Max results per request (1–100 for free Plan, 500 for paid Plans). The API defaults to 25. */
   limit?: number;
   /** Number of records to skip. The API defaults to 0. */
   offset?: number;
