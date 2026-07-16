@@ -14,5 +14,5 @@ test("returns codes sorted ascending", async () => {
   const result = await rc.getCurrencies();
   if (!result.success) throw result.error;
   const codes = result.currencies.map((c) => c.code);
-  expect(codes).toEqual([...codes].sort());
+  expect(codes).toEqual(codes.toSorted());
 });

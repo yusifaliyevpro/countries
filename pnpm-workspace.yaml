@@ -1,7 +1,8 @@
-allowBuilds:
-  unrs-resolver: true
+saveExact: true
 minimumReleaseAge: 1440
 trustPolicy: "no-downgrade"
 trustPolicyExclude:
   - semver@6.3.1
   - undici-types@6.21.0
+allowBuilds:
+  unrs-resolver: true

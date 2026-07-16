@@ -1,10 +1,10 @@
 import { countrySchema } from "@yusifaliyevpro/countries";
-import { $ZodIssue } from "zod/v4/core";
+import type { $ZodIssue } from "zod/v4/core";
 import { loadAllCountries } from "./all-countries";
 
 /** Resolve the value that actually lives at `path` inside the parsed country. */
 function valueAtPath(root: unknown, path: PropertyKey[]): unknown {
-  return path.reduce<unknown>((acc, key) => (acc == null ? undefined : (acc as Record<PropertyKey, unknown>)[key]), root);
+  return path.reduce<unknown>((acc, key) => (acc === null ? undefined : (acc as Record<PropertyKey, unknown>)[key]), root);
 }
 
 /** A short, human-readable preview of a received value — its shape, not its full contents. */

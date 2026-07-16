@@ -5,7 +5,6 @@ const config: Config = {
   testEnvironment: "node",
   // Cap workers to minimize request bursts; the test client also retries 429s
   // (tests/client.ts), and testTimeout gives that backoff room.
-  maxWorkers: 5,
   testTimeout: 30_000,
   setupFiles: ["<rootDir>/tests/setup.ts"],
   testPathIgnorePatterns: ["<rootDir>/tests/client.ts", "<rootDir>/tests/setup.ts"],

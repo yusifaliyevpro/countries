@@ -1,17 +1,17 @@
 import * as z from "zod/mini";
-import type { CAPITALS } from "../data/capitals";
 import type { ALPHA_2_CODES } from "../data/alpha_2";
 import type { ALPHA_3_CODES } from "../data/alpha_3";
+import type { CAPITALS } from "../data/capitals";
 import type { CCN3_CODES } from "../data/ccn3";
 import type { CIOC_CODES } from "../data/cioc";
 import type { CURRENCIES } from "../data/currencies";
 import type { CURRENCY_CODES } from "../data/currency_codes";
 import type { LANGUAGES } from "../data/languages";
-import type { SUPPORTED_TRANSLATION_KEYS } from "../data/translation_keys";
 import { REGIONS } from "../data/regions";
 import { SUBREGIONS } from "../data/subregions";
+import type { SUPPORTED_TRANSLATION_KEYS } from "../data/translation_keys";
 import type { LiteralUnion } from "./common";
-import { PrettifyDeep } from "./helpers";
+import type { PrettifyDeep } from "./helpers";
 
 const localizedName = z.strictObject({ common: z.string(), official: z.string() });
 type LocalizedName = z.infer<typeof localizedName>;
@@ -279,7 +279,8 @@ export type CountryListResult<T extends readonly (keyof Country)[]> =
  * country; // CountryPicker<T>  (no undefined)
  */
 export type CountryResult<T extends readonly (keyof Country)[]> =
-  { success: true; country: CountryPicker<T>; error: undefined } | { success: false; country: undefined; error: Error };
+  | { success: true; country: CountryPicker<T>; error: undefined }
+  | { success: false; country: undefined; error: Error };
 
 export type SupportedTranslationKey = (typeof SUPPORTED_TRANSLATION_KEYS)[number];
 export type Alpha_3Code = LiteralUnion<(typeof ALPHA_3_CODES)[number]>;

@@ -1,22 +1,71 @@
 {
   "name": "@yusifaliyevpro/countries",
+  "version": "5.2.1",
   "description": "TypeScript wrapper for Rest Countries API to fetch country data by codes, capitals, or all countries with full typings.",
-  "version": "5.2.0",
+  "keywords": [
+    "alpha_2",
+    "alpha_3",
+    "capital-cities",
+    "capitals",
+    "countries",
+    "country-api",
+    "country-data",
+    "flags",
+    "iso3166",
+    "node-sdk",
+    "region",
+    "rest-countries",
+    "restcountries",
+    "typescript",
+    "world-countries"
+  ],
+  "homepage": "https://github.com/yusifaliyevpro/countries#readme",
   "license": "MIT",
-  "type": "module",
-  "sideEffects": false,
   "author": {
     "name": "Yusif Aliyev",
     "email": "yusifaliyevpro@gmail.com",
     "url": "https://yusifaliyevpro.com/"
   },
-  "homepage": "https://github.com/yusifaliyevpro/countries#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yusifaliyevpro/countries.git"
   },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*.d.ts"
+      ],
+      "types": [
+        "./dist/types/index.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.mjs",
+      "require": "./dist/types/index.cjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsdown",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "check": "node scripts/pr-checks.ts",
     "sort-data": "node scripts/sort-data.ts",
     "test": "tsdown && jest",
@@ -32,56 +81,11 @@
     "@types/node": "24.12.4",
     "dotenv": "17.4.2",
     "jest": "30.4.2",
-    "prettier": "3.9.5",
+    "oxfmt": "0.59.0",
+    "oxlint": "1.74.0",
     "ts-jest": "29.4.11",
     "ts-node": "10.9.2",
-    "tsdown": "0.22.5",
-    "@typescript/native": "npm:typescript@^7.0.2",
-    "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "unplugin-unused": "^0.5.7"
-  },
-  "keywords": [
-    "countries",
-    "restcountries",
-    "rest-countries",
-    "country-api",
-    "typescript",
-    "iso3166",
-    "alpha_2",
-    "alpha_3",
-    "country-data",
-    "world-countries",
-    "capitals",
-    "capital-cities",
-    "region",
-    "flags"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
-    "./types": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/types/index.mjs",
-      "require": "./dist/types/index.cjs"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*.d.ts"
-      ],
-      "types": [
-        "./dist/types/index.d.ts"
-      ]
-    }
-  },
-  "files": [
-    "dist"
-  ]
+    "tsdown": "0.22.8",
+    "typescript": "6.0.3"
+  }
 }

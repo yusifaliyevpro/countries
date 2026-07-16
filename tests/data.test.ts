@@ -24,13 +24,14 @@ const actual = {
   SUBREGIONS: new Set<string>(),
 };
 
+const add = (set: Set<string>, value: string | undefined) => {
+  if (value) set.add(value);
+};
+
 beforeAll(async () => {
   const countries = await loadAllCountries();
   // Unrecognized territories (Abkhazia, Northern Cyprus, …) return empty strings
   // for missing codes/values, so only collect non-empty ones.
-  const add = (set: Set<string>, value: string | undefined) => {
-    if (value) set.add(value);
-  };
   for (const c of countries) {
     add(actual.ALPHA_2_CODES, c.codes.alpha_2);
     add(actual.ALPHA_3_CODES, c.codes.alpha_3);
@@ -66,11 +67,11 @@ test.each(datasets)("$label is in sync with the live country data", ({ label, fi
   const listed = new Set<string>(file);
   const present = actual[label];
 
-  const missing = [...present].filter((value) => !listed.has(value)).sort();
-  const stale = [...listed].filter((value) => !present.has(value)).sort();
+  const missing = [...present].filter((value) => !listed.has(value)).toSorted();
+  const stale = [...listed].filter((value) => !present.has(value)).toSorted();
 
   const problems: string[] = [];
   if (missing.length) problems.push(`MISSING from src/data/ (present in API, not listed): ${missing.join(", ")}`);
   if (stale.length) problems.push(`STALE in src/data/ (listed, but absent from API): ${stale.join(", ")}`);
-  if (problems.length) throw new Error(`${label} is out of sync:\n${problems.join("\n")}`);
+  expect(problems).toEqual([]);
 });

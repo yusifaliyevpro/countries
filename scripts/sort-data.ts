@@ -20,7 +20,7 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith(".ts"))) {
     const items = [...body.matchAll(ITEM)].map((m) => m[1]);
     if (items.length === 0) return block;
 
-    const sorted = [...items].sort((a, b) => a.localeCompare(b, "en"));
+    const sorted = items.toSorted((a, b) => a.localeCompare(b, "en"));
     if (sorted.every((value, i) => value === items[i])) return block; // already sorted
 
     fileChanged = true;
@@ -37,4 +37,4 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith(".ts"))) {
   }
 }
 
-if (changedAny) console.log("\nRun `prettier --write src/data` to normalize formatting.");
+if (changedAny) console.log("\nRun `pnpm oxfmt src/data` to normalize formatting.");

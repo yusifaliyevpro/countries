@@ -1,5 +1,5 @@
 import * as z from "zod/mini";
-import { CurrencyCode } from ".";
+import type { CurrencyCode } from ".";
 
 /**
  * Runtime schema for a **currency** from the REST Countries **Currencies** API,
@@ -55,4 +55,5 @@ export type CurrencyRatesResult =
 
 /** Discriminated result of {@link RestCountries.getCurrencies} (the supported-currency catalog). */
 export type CurrenciesResult =
-  { success: true; currencies: Currency[]; error: undefined } | { success: false; currencies: undefined; error: Error };
+  | { success: true; currencies: Currency[]; error: undefined }
+  | { success: false; currencies: undefined; error: Error };
