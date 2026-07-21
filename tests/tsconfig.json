@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "paths": {
+      "@yusifaliyevpro/countries": ["../src/index.ts"]
+    },
+    "types": ["node", "vitest/globals"]
+  },
+  // Without this, `include` is inherited from the root config and resolves
+  // relative to the root — checking src/ and scripts/ here too.
+  "include": ["."]
+}

@@ -68,24 +68,22 @@
     "lint:fix": "oxlint --fix",
     "check": "node scripts/pr-checks.ts",
     "sort-data": "node scripts/sort-data.ts",
-    "test": "tsdown && jest",
-    "test:schema": "tsdown && jest tests/schema.test.ts",
-    "test:data": "tsdown && jest tests/data.test.ts",
-    "test:currencies": "tsdown && jest tests/currencies.data.test.ts"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:schema": "vitest run tests/schema.test.ts",
+    "test:data": "vitest run tests/data.test.ts",
+    "test:currencies": "vitest run tests/currencies.data.test.ts"
   },
   "dependencies": {
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/jest": "30.0.0",
     "@types/node": "24.12.4",
     "dotenv": "17.4.2",
-    "jest": "30.4.2",
     "oxfmt": "0.59.0",
     "oxlint": "1.74.0",
-    "ts-jest": "29.4.11",
-    "ts-node": "10.9.2",
     "tsdown": "0.22.8",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "4.1.10"
   }
 }

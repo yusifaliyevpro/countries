@@ -1,3 +1,4 @@
+import type { Country } from "@yusifaliyevpro/countries";
 import { countrySchema } from "@yusifaliyevpro/countries";
 import type { $ZodIssue } from "zod/v4/core";
 import { loadAllCountries } from "./all-countries";
@@ -53,6 +54,13 @@ function formatIssues(root: unknown, issues: $ZodIssue[], indent = "  "): string
 // returns that we don't model — surfacing schema drift.
 test("every country in the API conforms to the Country schema", async () => {
   const countries = await loadAllCountries();
+
+  // The runtime half of that guarantee is the parse loop below; this is the
+  // static half — if the schema and the exported `Country` ever drift apart,
+  // every parse could still pass while consumers get the wrong type.
+  expectTypeOf<ReturnType<typeof countrySchema.parse>>().toExtend<Country>();
+  expectTypeOf(countries).toEqualTypeOf<Country[]>();
+
   expect(countries.length).toBeGreaterThan(200);
 
   const failures: string[] = [];

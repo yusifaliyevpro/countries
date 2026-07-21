@@ -1,3 +1,4 @@
+import type { Country } from "@yusifaliyevpro/countries";
 import { ALPHA_2_CODES } from "../src/data/alpha_2";
 import { ALPHA_3_CODES } from "../src/data/alpha_3";
 import { CAPITALS } from "../src/data/capitals";
@@ -30,6 +31,13 @@ const add = (set: Set<string>, value: string | undefined) => {
 
 beforeAll(async () => {
   const countries = await loadAllCountries();
+
+  // These constants back the LiteralUnion parameter types, so the data files
+  // have to stay readonly tuples of strings — widening one to `string[]` would
+  // silently drop autocomplete everywhere without failing a runtime assertion.
+  expectTypeOf(countries).toEqualTypeOf<Country[]>();
+  expectTypeOf(ALPHA_2_CODES).toExtend<readonly string[]>();
+  expectTypeOf(REGIONS).toExtend<readonly Country["region"][]>();
   // Unrecognized territories (Abkhazia, Northern Cyprus, …) return empty strings
   // for missing codes/values, so only collect non-empty ones.
   for (const c of countries) {
