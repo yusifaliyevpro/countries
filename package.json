@@ -75,14 +75,14 @@
     "test:currencies": "vitest run tests/currencies.data.test.ts"
   },
   "dependencies": {
-    "zod": "^4.4.3"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/node": "24.12.4",
     "dotenv": "17.4.2",
     "oxfmt": "0.60.0",
     "oxlint": "1.75.0",
-    "oxlint-tsgolint": "^7.0.2001",
+    "oxlint-tsgolint": "7.0.2001",
     "tsdown": "0.22.14",
     "typescript": "6.0.3",
     "vitest": "4.1.10"

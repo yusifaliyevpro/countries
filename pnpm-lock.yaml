@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: 4.4.3
         version: 4.4.3
     devDependencies:
       '@types/node':
@@ -25,7 +25,7 @@ importers:
         specifier: 1.75.0
         version: 1.75.0(oxlint-tsgolint@7.0.2001)
       oxlint-tsgolint:
-        specifier: ^7.0.2001
+        specifier: 7.0.2001
         version: 7.0.2001
       tsdown:
         specifier: 0.22.14
