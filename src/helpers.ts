@@ -43,6 +43,7 @@ export function countryFailure(error: Error): { success: false; country: undefin
 export function failure<K extends string>(error: Error, ...keys: K[]): { success: false; error: Error } & Record<K, undefined> {
   const result: Record<string, unknown> = { success: false, error };
   for (const key of keys) result[key] = undefined;
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return result as { success: false; error: Error } & Record<K, undefined>;
 }
 

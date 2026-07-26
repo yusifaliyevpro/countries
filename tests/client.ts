@@ -59,7 +59,7 @@ async function reserveSlot(): Promise<void> {
       const now = Date.now();
       let times: number[] = [];
       try {
-        times = JSON.parse(readFileSync(LEDGER_PATH, "utf8")) as number[];
+        times = JSON.parse(readFileSync(LEDGER_PATH, "utf8"));
       } catch {
         // no ledger yet, or a torn write — start the window over
       }
@@ -68,7 +68,7 @@ async function reserveSlot(): Promise<void> {
         times.push(now);
         writeFileSync(LEDGER_PATH, JSON.stringify(times));
       } else {
-        waitMs = Math.max(1, (times[0] as number) + WINDOW_MS - now);
+        waitMs = Math.max(1, times[0] + WINDOW_MS - now);
       }
     } finally {
       closeSync(fd);
@@ -129,13 +129,13 @@ function isCacheable(status: number): boolean {
  * unthrottled, and in milliseconds — only real requests are paced.
  */
 const cachingFetch: typeof fetch = async (input, init) => {
-  const request = new Request(input as RequestInfo, init);
+  const request = new Request(input, init);
   if (request.method !== "GET") return retryingFetch(input, init);
 
   const path = resolve(CACHE_DIR, cacheKey(request.method, request.url));
 
   if (existsSync(path)) {
-    const hit = JSON.parse(readFileSync(path, "utf8")) as CachedResponse;
+    const hit: CachedResponse = JSON.parse(readFileSync(path, "utf8"));
     return new Response(hit.body, { status: hit.status, statusText: hit.statusText, headers: hit.headers });
   }
 
@@ -159,6 +159,6 @@ const cachingFetch: typeof fetch = async (input, init) => {
 
 /** Shared client used across the test suite (disk-cached, with 429 retry so CI stays green). */
 export const rc = new RestCountries({
-  apiKey: process.env.REST_COUNTRIES_API_KEY as string,
+  apiKey: process.env.REST_COUNTRIES_API_KEY!,
   fetch: cachingFetch,
 });

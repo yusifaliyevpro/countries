@@ -5,7 +5,10 @@ import { loadAllCountries } from "./all-countries";
 
 /** Resolve the value that actually lives at `path` inside the parsed country. */
 function valueAtPath(root: unknown, path: PropertyKey[]): unknown {
-  return path.reduce<unknown>((acc, key) => (acc === null ? undefined : (acc as Record<PropertyKey, unknown>)[key]), root);
+  return path.reduce<unknown>(
+    (acc, key) => (acc === null || acc === undefined ? undefined : Reflect.get(Object(acc), key)),
+    root,
+  );
 }
 
 /** A short, human-readable preview of a received value — its shape, not its full contents. */
@@ -16,9 +19,10 @@ function preview(value: unknown): string {
     const sample = value.length ? preview(value[0]) : "";
     return `array(${value.length})${value.length ? ` of ${sample}` : ""}`;
   }
-  if (typeof value === "object") return `object{ ${Object.keys(value as object).join(", ")} }`;
+  if (typeof value === "object") return `object{ ${Object.keys(value).join(", ")} }`;
   if (typeof value === "string") return `string ${JSON.stringify(value.length > 40 ? `${value.slice(0, 40)}…` : value)}`;
-  return `${typeof value}(${String(value)})`;
+  if (typeof value === "number" || typeof value === "bigint" || typeof value === "boolean") return `${typeof value}(${value})`;
+  return typeof value; // symbol / function — not expected in parsed JSON
 }
 
 /**

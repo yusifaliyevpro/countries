@@ -17,7 +17,8 @@ test("fetches countries by region", async () => {
 });
 
 test("returns an empty page for an unknown region", async () => {
-  const result = await rc.getCountriesByRegion({ region: "Atlantis" as never, fields: ["names"] });
+  // @ts-expect-error: `region` is a closed union, so this is an invalid value.
+  const result = await rc.getCountriesByRegion({ region: "Atlantis", fields: ["names"] });
 
   expectTypeOf(result.countries).toEqualTypeOf<Pick<Country, "names">[] | undefined>();
 
