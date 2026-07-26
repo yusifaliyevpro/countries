@@ -170,17 +170,16 @@ export class RestCountries {
       const omit = params.omitFields && Array.from(new Set(params.omitFields));
       if (omit && omit.length) url.searchParams.set("response_fields_omit", omit.join(","));
 
-      const response = await this.#fetch(url.toString(), {
-        ...fetchOptions,
-        headers: { Authorization: `Bearer ${this.#apiKey}`, ...fetchOptions?.headers },
-      });
+      const headers = new Headers(fetchOptions?.headers);
+      if (!headers.has("Authorization")) headers.set("Authorization", `Bearer ${this.#apiKey}`);
+      const response = await this.#fetch(url.toString(), { ...fetchOptions, headers });
 
       // Read as text first so a non-JSON error body (HTML 500, plain-text rate
       // limit, …) doesn't throw and lose the status — we surface it instead.
       const rawText = await response.text();
       let body: RawEnvelope<CountryPicker<T>> | undefined;
       try {
-        body = rawText ? (JSON.parse(rawText) as RawEnvelope<CountryPicker<T>>) : undefined;
+        body = rawText ? JSON.parse(rawText) : undefined;
       } catch {
         body = undefined;
       }
@@ -191,6 +190,7 @@ export class RestCountries {
 
       // Strip the per-result `_match` / `_meta` search annotations so callers
       // get clean Country objects matching the typed shape.
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       const countries = body.data.objects.map(({ _match, _meta, ...country }) => country as CountryPicker<T>);
       const meta = body.data.meta ?? {
         total: countries.length,
@@ -334,7 +334,7 @@ export class RestCountries {
     { lang, fields, omitFields, limit, offset }: { lang: Language } & Selection<T> & Pagination,
     fetchOptions?: RequestInit,
   ): Promise<CountryListResult<T>> {
-    return this.#request<T>("/languages", { q: lang as string, fields, omitFields, limit, offset }, fetchOptions);
+    return this.#request<T>("/languages", { q: lang, fields, omitFields, limit, offset }, fetchOptions);
   }
 
   /**
@@ -347,7 +347,7 @@ export class RestCountries {
     { currency, fields, omitFields, limit, offset }: { currency: CurrencyName } & Selection<T> & Pagination,
     fetchOptions?: RequestInit,
   ): Promise<CountryListResult<T>> {
-    return this.#request<T>("/currencies", { q: currency as string, fields, omitFields, limit, offset }, fetchOptions);
+    return this.#request<T>("/currencies", { q: currency, fields, omitFields, limit, offset }, fetchOptions);
   }
 
   /**
@@ -360,7 +360,7 @@ export class RestCountries {
     { capital, fields, omitFields }: { capital: Capital } & Selection<T>,
     fetchOptions?: RequestInit,
   ): Promise<CountryResult<T>> {
-    return this.#first<T>("/capitals", { q: capital as string, fields, omitFields }, fetchOptions);
+    return this.#first<T>("/capitals", { q: capital, fields, omitFields }, fetchOptions);
   }
 
   /**
@@ -393,6 +393,7 @@ export class RestCountries {
    * Performs a GET against the Currencies API and unwraps the `data.objects`
    * envelope. Never throws — failures are returned as `{ success: false, error }`.
    */
+  // oxlint-disable-next-line typescript/no-unnecessary-type-parameters
   async #currencyRequest<C>(
     path: string,
     search: URLSearchParams,
@@ -402,15 +403,14 @@ export class RestCountries {
       const url = new URL(this.#currenciesBaseURL.replace(/\/$/, "") + path);
       search.forEach((value, key) => url.searchParams.set(key, value));
 
-      const response = await this.#fetch(url.toString(), {
-        ...fetchOptions,
-        headers: { Authorization: `Bearer ${this.#apiKey}`, ...fetchOptions?.headers },
-      });
+      const headers = new Headers(fetchOptions?.headers);
+      if (!headers.has("Authorization")) headers.set("Authorization", `Bearer ${this.#apiKey}`);
+      const response = await this.#fetch(url.toString(), { ...fetchOptions, headers });
 
       const rawText = await response.text();
       let body: RawEnvelope<C> | undefined;
       try {
-        body = rawText ? (JSON.parse(rawText) as RawEnvelope<C>) : undefined;
+        body = rawText ? JSON.parse(rawText) : undefined;
       } catch {
         body = undefined;
       }
@@ -418,7 +418,7 @@ export class RestCountries {
       if (!response.ok || !body?.data?.objects) {
         return { success: false, error: errorFromResponse(response, body, rawText) };
       }
-      return { success: true, objects: body.data.objects as C[] };
+      return { success: true, objects: body.data.objects };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
     }

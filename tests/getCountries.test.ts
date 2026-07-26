@@ -39,7 +39,7 @@ test("filters by sovereignty via classification", async () => {
   expectTypeOf(result.countries).toEqualTypeOf<Pick<Country, "classification">[]>();
   expectTypeOf(result.countries[0].classification.sovereign).toEqualTypeOf<boolean>();
 
-  expect(result.countries.every((c) => c.classification.sovereign === true)).toBe(true);
+  expect(result.countries.every((c) => c.classification.sovereign)).toBe(true);
 });
 
 test("AND-combines composable filters", async () => {
@@ -69,7 +69,7 @@ test("filters by continent and membership", async () => {
 
   expectTypeOf(result.countries).toEqualTypeOf<Pick<Country, "memberships">[]>();
 
-  expect(result.countries.every((c) => c.memberships.nato === true)).toBe(true);
+  expect(result.countries.every((c) => c.memberships.nato)).toBe(true);
 });
 
 test("omitFields excludes properties from the response", async () => {

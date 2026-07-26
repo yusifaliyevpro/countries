@@ -82,7 +82,8 @@ for (const check of checks) {
   } catch (err: unknown) {
     // Collect stderr output, print it cleanly before prompt
     if (err && typeof err === "object" && "stderr" in err) {
-      errorOutput = String((err as { stderr: string }).stderr ?? "");
+      if (typeof err.stderr === "string") errorOutput = err.stderr;
+      else if (Buffer.isBuffer(err.stderr)) errorOutput = err.stderr.toString("utf8");
     }
     if (errorOutput) process.stderr.write(errorOutput);
 
