@@ -23,8 +23,7 @@ test("returns an empty page for an unknown subregion", async () => {
   expectTypeOf<Country["subregion"]>().toExtend<string>();
   expectTypeOf("aaaaaaabbb").toExtend<Country["subregion"]>();
 
-  // Must be an empty *successful* page — the old ternary form also passed when
-  // the request itself failed.
+  // Must be an empty *successful* page — the old ternary form also passed when the request itself failed.
   if (!result.success) throw result.error;
   expect(result.countries).toHaveLength(0);
   expect(result.meta.total).toBe(0);
