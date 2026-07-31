@@ -13,6 +13,6 @@
   },
   // `tests` is checked by its own tests/tsconfig.json — it needs the vitest
   // globals and the src alias, neither of which belong in the library's config.
-  "include": ["src", "scripts"],
+  "include": ["src", "scripts", "greenly.config.ts"],
   "exclude": ["node_modules", "dist"]
 }
