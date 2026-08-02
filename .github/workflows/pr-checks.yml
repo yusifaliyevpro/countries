@@ -25,13 +25,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Rotate the test response cache every 3 days: within a window the suite
+      # Rotate the test response cache every 6 hours: within a window the suite
       # replays cached API responses (offline, no rate-limit hits); when the
       # window rolls the key misses, so the tests refetch from the live API and
-      # repopulate the cache. 259200 seconds = 3 days.
+      # repopulate the cache. 21600 seconds = 6 hours.
       - name: Compute cache window
         id: cache-window
-        run: echo "bucket=$(( $(date +%s) / 259200 ))" >> "$GITHUB_OUTPUT"
+        run: echo "bucket=$(( $(date +%s) / 21600 ))" >> "$GITHUB_OUTPUT"
 
       - name: Cache test API responses
         uses: actions/cache@v6
