@@ -426,7 +426,6 @@ if (!success) throw error;
 console.log(currencies.map((c) => c.code));
 ```
 
----
 
 ## Filtering
 
@@ -448,7 +447,6 @@ const { countries } = await restCountries.getCountries({
 
 All filter keys are optional and fully typed. `classification` and `memberships` expose every boolean flag from those objects on `Country`.
 
----
 
 ## Pagination
 
@@ -474,7 +472,6 @@ if (result.meta.more) {
 }
 ```
 
----
 
 ## Fetch Options
 
@@ -488,7 +485,6 @@ const { country: germany } = await restCountries.getCountryByCode(
 );
 ```
 
----
 
 ## Available Fields
 
@@ -538,7 +534,6 @@ const { country } = await restCountries.getCountryByCode({
 });
 ```
 
----
 
 ## Type Definitions
 
@@ -576,7 +571,6 @@ import type { Country, Region, Alpha_2Code } from "@yusifaliyevpro/countries/typ
 - **`CurrencyConvertResult`** / **`CurrencyRatesResult`** / **`CurrenciesResult`**: Discriminated results of `convertCurrency` / `getCurrencyRates` / `getCurrencies`.
 - **`currencySchema`** / **`currencyConversionSchema`** / **`currencyRatesSchema`**: Zod schemas backing the types above (exported from the main entry for runtime validation).
 
----
 
 ## Response validation
 
@@ -594,7 +588,6 @@ if (res.success) {
 
 Zod Mini is used to keep the footprint small, and the schema is only pulled into your bundle if you actually import `countrySchema` (the package is marked side-effect-free).
 
----
 
 ## `defineFields`
 
@@ -608,7 +601,6 @@ const countryFields = defineFields(["names", "capitals", "population", "region",
 const { country } = await restCountries.getCountryByCode({ alpha_3: "DEU", fields: countryFields });
 ```
 
----
 
 ## `CountryPicker<typeof fields>`
 
@@ -644,7 +636,6 @@ export function CountryCard({ country }: { country: CountryPicker<typeof country
 - **Reusability**: use the same `fields` and type across your app.
 - Prevents accessing fields you didn't fetch.
 
----
 
 ## Error Handling
 
@@ -670,8 +661,7 @@ res.country.names.common;
 
 Field selection is enforced the same way — accessing a field you didn't request (`fields: ["names"]` then `.capitals`) is a type error.
 
----
 
 ## License
 
-MIT License.
+LGPL-2.1-or-later © [Yusif Aliyev](https://yusifaliyevpro.com)
