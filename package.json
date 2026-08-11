@@ -103,9 +103,9 @@
   "devDependencies": {
     "@types/node": "24.13.3",
     "dotenv": "17.4.2",
-    "greenly": "1.1.3",
-    "oxfmt": "0.61.0",
-    "oxlint": "1.76.0",
+    "greenly": "1.1.5",
+    "oxfmt": "0.63.0",
+    "oxlint": "1.78.0",
     "oxlint-tsgolint": "7.0.2001",
     "tsdown": "0.22.14",
     "typescript": "6.0.3",
