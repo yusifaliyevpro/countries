@@ -5,6 +5,8 @@
     "moduleResolution": "Bundler",
     "declaration": true,
     "strict": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
     "esModuleInterop": true,
     "isolatedDeclarations": false,
     "skipLibCheck": true,
