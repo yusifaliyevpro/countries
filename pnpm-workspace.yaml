@@ -6,3 +6,5 @@ trustPolicyExclude:
   - undici-types@6.21.0
 allowBuilds:
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - zod@4.5.2

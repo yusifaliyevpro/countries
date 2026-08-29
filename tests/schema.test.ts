@@ -1,7 +1,14 @@
 import type { Country } from "@yusifaliyevpro/countries";
 import { countrySchema } from "@yusifaliyevpro/countries";
 import type { $ZodIssue } from "zod/v4/core";
+import * as z from "zod/mini";
 import { loadAllCountries } from "./all-countries";
+
+// Pre-compile once: z.compile() generates an optimized parser (2–7.8x faster
+// traversal than the interpreted schema) while keeping full `.issues` output,
+// which the failure report below depends on. Validating 250+ full country
+// objects is the hot path in this test, so this is where it pays off.
+const compiledCountrySchema = z.compile(countrySchema);
 
 /** Resolve the value that actually lives at `path` inside the parsed country. */
 function valueAtPath(root: unknown, path: PropertyKey[]): unknown {
@@ -69,7 +76,7 @@ test("every country in the API conforms to the Country schema", async () => {
 
   const failures: string[] = [];
   for (const country of countries) {
-    const result = countrySchema.safeParse(country);
+    const result = compiledCountrySchema.safeParse(country);
     if (!result.success) {
       const name = country.names?.common ?? country.codes?.alpha_3 ?? "unknown";
       failures.push([name, ...formatIssues(country, result.error.issues)].join("\n"));
