@@ -1,7 +1,10 @@
 import type { Country } from "@yusifaliyevpro/countries";
 import { countrySchema } from "@yusifaliyevpro/countries";
+import * as z from "zod/mini";
 import type { $ZodIssue } from "zod/v4/core";
 import { loadAllCountries } from "./all-countries";
+
+const compiledCountrySchema = z.compile(countrySchema);
 
 /** Resolve the value that actually lives at `path` inside the parsed country. */
 function valueAtPath(root: unknown, path: PropertyKey[]): unknown {
@@ -69,7 +72,7 @@ test("every country in the API conforms to the Country schema", async () => {
 
   const failures: string[] = [];
   for (const country of countries) {
-    const result = countrySchema.safeParse(country);
+    const result = compiledCountrySchema.safeParse(country);
     if (!result.success) {
       const name = country.names?.common ?? country.codes?.alpha_3 ?? "unknown";
       failures.push([name, ...formatIssues(country, result.error.issues)].join("\n"));
