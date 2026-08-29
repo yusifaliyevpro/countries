@@ -1,13 +1,9 @@
 import type { Country } from "@yusifaliyevpro/countries";
 import { countrySchema } from "@yusifaliyevpro/countries";
-import type { $ZodIssue } from "zod/v4/core";
 import * as z from "zod/mini";
+import type { $ZodIssue } from "zod/v4/core";
 import { loadAllCountries } from "./all-countries";
 
-// Pre-compile once: z.compile() generates an optimized parser (2–7.8x faster
-// traversal than the interpreted schema) while keeping full `.issues` output,
-// which the failure report below depends on. Validating 250+ full country
-// objects is the hot path in this test, so this is where it pays off.
 const compiledCountrySchema = z.compile(countrySchema);
 
 /** Resolve the value that actually lives at `path` inside the parsed country. */
