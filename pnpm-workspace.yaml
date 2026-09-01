@@ -1,10 +1,10 @@
 saveExact: true
+engineStrict: true
 minimumReleaseAge: 1440
+minimumReleaseAgeExcludePrune: true
 trustPolicy: "no-downgrade"
 trustPolicyExclude:
   - semver@6.3.1
   - undici-types@6.21.0
 allowBuilds:
   unrs-resolver: true
-minimumReleaseAgeExclude:
-  - zod@4.5.2
