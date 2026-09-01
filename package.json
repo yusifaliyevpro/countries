@@ -98,7 +98,7 @@
     "test:currencies": "vitest run tests/currencies.data.test.ts"
   },
   "dependencies": {
-    "zod": "4.5.2"
+    "zod": "4.5.4"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
