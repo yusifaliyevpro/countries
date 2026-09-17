@@ -34,6 +34,10 @@ export const countrySchema = z.strictObject({
     native: z.record(z.string(), localizedName),
     translations: z.record(z.string(), localizedName),
   }),
+  descriptions: z.strictObject({
+    short: z.string(),
+    long: z.string(),
+  }),
   codes: z.strictObject({
     alpha_2: z.string(),
     alpha_3: z.string(),
