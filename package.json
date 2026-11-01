@@ -98,18 +98,18 @@
     "test:currencies": "vitest run tests/currencies.data.test.ts"
   },
   "dependencies": {
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "devDependencies": {
-    "@types/node": "24.19.1",
-    "dotenv": "18.0.6",
+    "@types/node": "24.19.2",
+    "dotenv": "18.0.9",
     "greenly": "1.2.0",
-    "oxfmt": "0.72.0",
-    "oxlint": "1.87.0",
-    "oxlint-tsgolint": "7.0.2003",
-    "tsdown": "0.23.0",
+    "oxfmt": "0.75.0",
+    "oxlint": "1.90.0",
+    "oxlint-tsgolint": "7.0.2005",
+    "tsdown": "0.23.4",
     "typescript": "7.0.2",
     "unplugin-unused": "0.6.0",
-    "vitest": "5.0.3"
+    "vitest": "5.0.5"
   }
 }
