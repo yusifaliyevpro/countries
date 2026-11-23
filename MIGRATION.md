@@ -1,6 +1,18 @@
+# Migrating to v6 (ESM only)
+
+v6 has **no API or schema changes**. The only breaking change is packaging: the package now ships **ESM only** (no CommonJS build).
+
+- **ESM (`import`)**: nothing to change.
+- **CommonJS (`require`)**: keeps working on **Node.js 20.19+ / 22.12+**, which can `require()` ES modules natively. On older Node versions, upgrade Node or switch to `import`.
+- **`engines`** now declares `node >=20.19`.
+- **Jest** users that transform to CommonJS may need to add the package to `transformIgnorePatterns` exceptions, or use native ESM.
+- **Types**: `exports` now points to the real `.d.mts` files and the old `typesVersions` map was removed. Use `moduleResolution` `"bundler"`, `"node16"` or `"nodenext"`.
+
+---
+
 # Migrating to v5 (REST Countries v5)
 
-REST Countries shut down v1–v4 and now only serves **v5**, which **requires an API key** and **completely restructured the response schema**. This package's `v5` is a ground-up rewrite to match — the major version now tracks the API version.
+REST Countries shut down v1–v4 and now only serves **v5**, which **requires an API key** and **completely restructured the response schema**. This package's `v5` was a ground-up rewrite to match. (Since v6, the package major version no longer tracks the API version; v6 still targets REST Countries v5.)
 
 Because the v1–v4 endpoints are gone, **staying on v2.x of this package is no longer an option** — the old version can't reach a live API. Upgrading is required.
 
